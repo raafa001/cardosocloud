@@ -7,28 +7,11 @@
     <meta name="description" content="Independent technology consulting firm specialized in high-performance infrastructure solutions, cloud architecture orchestration, and system reliability management.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        graphite: {
-                            950: '#0a0a0a',
-                            900: '#171717',
-                            800: '#262626',
-                            700: '#404040',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
-        
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #171717 50%, #0a0a0a 100%);
+            background-color: #050505;
+            color: #f5f5f5;
         }
         
         .font-code {
@@ -36,14 +19,14 @@
         }
         
         .gradient-text {
-            background: linear-gradient(90deg, #ef4444, #f97316, #ef4444);
+            background: linear-gradient(90deg, #ffffff, #ef4444, #ffffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .glow-box {
-            box-shadow: 0 0 40px rgba(239, 68, 68, 0.08), 0 0 80px rgba(239, 68, 68, 0.04);
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.08), 0 0 70px rgba(0, 0, 0, 0.8);
         }
         
         .glow-border {
@@ -51,13 +34,13 @@
         }
         
         .glow-border:hover {
-            border-color: rgba(239, 68, 68, 0.5);
+            border-color: rgba(239, 68, 68, 0.6);
             box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
         }
         
         .code-box {
-            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(23, 23, 23, 0.9) 100%);
-            backdrop-filter: blur(10px);
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(12px);
         }
         
         .typing-cursor::after {
@@ -77,16 +60,16 @@
         
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
         
         .pulse-glow {
-            animation: pulseGlow 2s ease-in-out infinite;
+            animation: pulseGlow 2.5s ease-in-out infinite;
         }
         
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.5); }
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.25); }
+            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.45); }
         }
         
         .tech-icon {
@@ -94,7 +77,7 @@
         }
         
         .tech-icon:hover {
-            transform: scale(1.1) translateY(-5px);
+            transform: scale(1.08) translateY(-4px);
         }
         
         .nav-link {
@@ -126,34 +109,34 @@
         }
     </style>
 </head>
-<body class="text-neutral-100 min-h-screen">
+<body>
     <!-- Header -->
-    <header class="fixed w-full top-0 z-50 bg-neutral-950/90 backdrop-blur-lg border-b border-neutral-800/50">
+    <header class="fixed w-full top-0 z-50 bg-black/90 backdrop-blur-xl border-b border-neutral-900">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center">
+                    <div class="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                         <i class="fas fa-cloud text-white text-sm"></i>
                     </div>
-                    <span class="font-bold text-lg tracking-tight">CARDOSO <span class="text-red-500">CLOUD</span> & SRE</span>
+                    <span class="font-bold text-lg tracking-tight text-white">CARDOSO <span class="text-red-500">CLOUD</span> & SRE</span>
                 </div>
                 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#about" class="nav-link text-neutral-300 hover:text-red-500 transition-colors text-sm font-medium" data-pt="Sobre" data-en="About">Sobre</a>
-                    <a href="#services" class="nav-link text-neutral-300 hover:text-red-500 transition-colors text-sm font-medium" data-pt="Serviços" data-en="Services">Serviços</a>
-                    <a href="#impact" class="nav-link text-neutral-300 hover:text-red-500 transition-colors text-sm font-medium" data-pt="Impacto" data-en="Impact">Impacto</a>
-                    <a href="#stack" class="nav-link text-neutral-300 hover:text-red-500 transition-colors text-sm font-medium" data-pt="Stack" data-en="Stack">Stack</a>
-                    <a href="#contact" class="nav-link text-neutral-300 hover:text-red-500 transition-colors text-sm font-medium" data-pt="Contato" data-en="Contact">Contato</a>
+                    <a href="#about" class="nav-link text-neutral-300 hover:text-white transition-colors text-sm font-medium" data-pt="Sobre" data-en="About">About</a>
+                    <a href="#services" class="nav-link text-neutral-300 hover:text-white transition-colors text-sm font-medium" data-pt="Serviços" data-en="Services">Services</a>
+                    <a href="#impact" class="nav-link text-neutral-300 hover:text-white transition-colors text-sm font-medium" data-pt="Impacto" data-en="Impact">Impact</a>
+                    <a href="#stack" class="nav-link text-neutral-300 hover:text-white transition-colors text-sm font-medium" data-pt="Stack" data-en="Stack">Stack</a>
+                    <a href="#contact" class="nav-link text-neutral-300 hover:text-white transition-colors text-sm font-medium" data-pt="Contato" data-en="Contact">Contact</a>
                 </div>
                 
                 <!-- Right Side -->
                 <div class="flex items-center space-x-4">
                     <!-- Language Toggle -->
-                    <button id="langToggle" class="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-colors text-sm text-white border border-neutral-700">
+                    <button id="langToggle" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 transition-colors text-sm text-white border border-neutral-700">
                         <i class="fas fa-globe text-red-500"></i>
-                        <span id="currentLang" class="text-white">EN</span>
+                        <span id="currentLang" class="font-semibold text-white">EN</span>
                     </button>
                     
                     <!-- WhatsApp CTA -->
@@ -163,7 +146,7 @@
                     </a>
                     
                     <!-- Mobile Menu Button -->
-                    <button id="mobileMenuBtn" class="md:hidden p-2 text-neutral-300 hover:text-red-500">
+                    <button id="mobileMenuBtn" class="md:hidden p-2 text-neutral-300 hover:text-white focus:outline-none">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
@@ -171,13 +154,13 @@
         </nav>
         
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="mobile-menu fixed top-16 right-0 w-full h-screen bg-neutral-950/98 backdrop-blur-lg md:hidden">
+        <div id="mobileMenu" class="mobile-menu fixed top-16 right-0 w-full h-screen bg-black/95 backdrop-blur-xl md:hidden">
             <div class="flex flex-col p-6 space-y-4">
-                <a href="#about" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Sobre" data-en="About">Sobre</a>
-                <a href="#services" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Serviços" data-en="Services">Serviços</a>
-                <a href="#impact" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Impacto" data-en="Impact">Impacto</a>
+                <a href="#about" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Sobre" data-en="About">About</a>
+                <a href="#services" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Serviços" data-en="Services">Services</a>
+                <a href="#impact" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Impacto" data-en="Impact">Impact</a>
                 <a href="#stack" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Stack" data-en="Stack">Stack</a>
-                <a href="#contact" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Contato" data-en="Contact">Contato</a>
+                <a href="#contact" class="text-neutral-300 hover:text-red-500 py-2 border-b border-neutral-800" data-pt="Contato" data-en="Contact">Contact</a>
                 <a href="https://wa.me/5547984493186" target="_blank" class="flex items-center justify-center space-x-2 py-3 bg-red-600 text-white font-semibold rounded-lg">
                     <i class="fab fa-whatsapp text-xl"></i>
                     <span>WhatsApp</span>
@@ -187,34 +170,34 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-red-600/5 via-transparent to-transparent"></div>
-        <div class="max-w-7xl mx-auto">
+    <section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-black">
+        <div class="absolute inset-0 bg-gradient-to-b from-red-950/20 via-transparent to-transparent"></div>
+        <div class="max-w-7xl mx-auto relative z-10">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <!-- Left Content -->
                 <div class="space-y-8">
-                    <div class="inline-flex items-center space-x-2 px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-full">
-                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                        <span class="text-red-500 text-sm font-medium" data-pt="Consultoria de Infraestrutura de Alto Desempenho" data-en="High-Performance Infrastructure Consulting">Consultoria de Infraestrutura de Alto Desempenho</span>
+                    <div class="inline-flex items-center space-x-2 px-4 py-2 bg-neutral-900 border border-red-500/30 rounded-full">
+                        <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
+                        <span class="text-neutral-200 text-sm font-medium" data-pt="Consultoria de Infraestrutura de Alto Desempenho" data-en="High-Performance Infrastructure Consulting">High-Performance Infrastructure Consulting</span>
                     </div>
                     
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-white">
                         <span data-pt="Arquitetura Cloud &" data-en="Enterprise Cloud Architecture &">Enterprise Cloud Architecture &</span><br>
                         <span class="gradient-text">Site Reliability Engineering</span>
                     </h1>
                     
-                    <p class="text-lg text-neutral-400 max-w-xl leading-relaxed" data-pt="Consultoria tecnológica independente especializada em soluções de infraestrutura de alto desempenho, orquestração de arquitetura cloud e gestão de confiabilidade de sistemas. Entregamos automação escalável, monitoramento robusto e pipelines de deployment resilientes para clientes enterprise internacionais." data-en="Independent technology consulting firm specialized in high-performance infrastructure solutions, cloud architecture orchestration, and system reliability management. We deliver scalable automation, robust monitoring, and resilient deployment pipelines for enterprise and international clients.">
+                    <p class="text-lg text-neutral-300 max-w-xl leading-relaxed" data-pt="Consultoria tecnológica independente especializada em soluções de infraestrutura de alto desempenho, orquestração de arquitetura cloud e gestão de confiabilidade de sistemas. Entregamos automação escalável, monitoramento robusto e pipelines de deployment resilientes para clientes enterprise internacionais." data-en="Independent technology consulting firm specialized in high-performance infrastructure solutions, cloud architecture orchestration, and system reliability management. We deliver scalable automation, robust monitoring, and resilient deployment pipelines for enterprise and international clients.">
                         Independent technology consulting firm specialized in high-performance infrastructure solutions, cloud architecture orchestration, and system reliability management. We deliver scalable automation, robust monitoring, and resilient deployment pipelines for enterprise and international clients.
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="https://wa.me/5547984493186" target="_blank" class="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all shadow-lg shadow-red-500/20">
+                        <a href="https://wa.me/5547984493186" target="_blank" class="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all shadow-lg shadow-red-900/30">
                             <i class="fab fa-whatsapp text-xl"></i>
                             <span data-pt="Agendar Consulta" data-en="Schedule Consultation">Schedule Consultation</span>
                         </a>
-                        <a href="#services" class="inline-flex items-center justify-center space-x-2 px-6 py-3 border border-neutral-700 hover:border-red-500 text-neutral-300 hover:text-red-500 font-medium rounded-lg transition-all">
+                        <a href="#services" class="inline-flex items-center justify-center space-x-2 px-6 py-3 border border-neutral-700 hover:border-red-500 text-neutral-200 hover:text-white font-medium rounded-lg transition-all bg-neutral-950">
                             <span data-pt="Ver Serviços" data-en="View Services">View Services</span>
-                            <i class="fas fa-arrow-down"></i>
+                            <i class="fas fa-arrow-down text-sm"></i>
                         </a>
                     </div>
                 </div>
@@ -224,18 +207,18 @@
                     <div class="code-box glow-border rounded-2xl p-6 glow-box">
                         <div class="flex items-center space-x-2 mb-4">
                             <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                            <span class="text-neutral-500 text-sm ml-2 font-code">main.tf</span>
+                            <div class="w-3 h-3 bg-neutral-600 rounded-full"></div>
+                            <div class="w-3 h-3 bg-neutral-700 rounded-full"></div>
+                            <span class="text-neutral-400 text-sm ml-2 font-code">main.tf</span>
                         </div>
-                        <pre class="font-code text-sm space-y-2 overflow-x-auto"><code><span class="text-red-500">resource</span> <span class="text-neutral-300">"aws_eks_cluster"</span> <span class="text-white">"production"</span> {
-  <span class="text-red-500">name</span>     = <span class="text-neutral-400">"cardoso-prod-cluster"</span>
-  <span class="text-red-500">role_arn</span> = <span class="text-neutral-300">aws_iam_role</span>.<span class="text-white">eks_cluster</span>.<span class="text-red-500">arn</span>
-  <span class="text-red-500">version</span>  = <span class="text-neutral-400">"1.28"</span>
+                        <pre class="font-code text-sm space-y-2 overflow-x-auto"><code><span class="text-red-500 font-semibold">resource</span> <span class="text-neutral-300">"aws_eks_cluster"</span> <span class="text-white">"production"</span> {
+  <span class="text-red-500 font-semibold">name</span>     = <span class="text-neutral-400">"cardoso-prod-cluster"</span>
+  <span class="text-red-500 font-semibold">role_arn</span> = <span class="text-neutral-300">aws_iam_role</span>.<span class="text-white">eks_cluster</span>.<span class="text-red-500 font-semibold">arn</span>
+  <span class="text-red-500 font-semibold">version</span>  = <span class="text-neutral-400">"1.28"</span>
 
-  <span class="text-red-500">vpc_config</span> {
-    <span class="text-red-500">cluster_security_group_id</span> = <span class="text-neutral-300">aws_security_group</span>.<span class="text-white">eks_cluster</span>.<span class="text-red-500">id</span>
-    <span class="text-red-500">subnet_ids</span>              = <span class="text-neutral-300">aws_subnet</span>.<span class="text-white">private</span>[*].<span class="text-red-500">id</span>
+  <span class="text-red-500 font-semibold">vpc_config</span> {
+    <span class="text-red-500 font-semibold">cluster_security_group_id</span> = <span class="text-neutral-300">aws_security_group</span>.<span class="text-white">eks_cluster</span>.<span class="text-red-500 font-semibold">id</span>
+    <span class="text-red-500 font-semibold">subnet_ids</span>              = <span class="text-neutral-300">aws_subnet</span>.<span class="text-white">private</span>[*].<span class="text-red-500 font-semibold">id</span>
   }
 }</code></pre>
                     </div>
@@ -245,28 +228,28 @@
     </section>
 
     <!-- About / Founder Section -->
-    <section id="about" class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-900/50">
+    <section id="about" class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-950 border-y border-neutral-900">
         <div class="max-w-7xl mx-auto">
             <div class="grid lg:grid-cols-2 gap-16 items-center">
                 <!-- Image / Avatar -->
                 <div class="relative">
-                    <div class="w-64 h-64 mx-auto rounded-2xl bg-gradient-to-br from-red-500/20 to-neutral-900 glow-border glow-box flex items-center justify-center">
+                    <div class="w-64 h-64 mx-auto rounded-2xl bg-neutral-900 glow-border glow-box flex items-center justify-center">
                         <div class="text-center">
                             <i class="fas fa-user-tie text-6xl text-red-500 mb-4"></i>
-                            <div class="flex items-center justify-center space-x-1">
-                                <span class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
-                                <span class="text-red-500 font-medium" data-pt="Disponível para projetos" data-en="Available for projects">Disponível para projetos</span>
+                            <div class="flex items-center justify-center space-x-2">
+                                <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>
+                                <span class="text-neutral-200 text-sm font-medium" data-pt="Disponível para projetos" data-en="Available for projects">Available for projects</span>
                             </div>
                         </div>
                     </div>
-                    <div class="absolute -bottom-4 -right-4 lg:right-16 bg-neutral-900/90 backdrop-blur rounded-xl p-4 glow-border">
+                    <div class="absolute -bottom-4 -right-4 lg:right-12 bg-neutral-900/90 backdrop-blur rounded-xl p-4 glow-border">
                         <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+                            <div class="w-12 h-12 bg-red-950/50 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-medal text-red-500 text-xl"></i>
                             </div>
                             <div>
                                 <p class="text-2xl font-bold text-white">15+</p>
-                                <p class="text-neutral-400 text-sm" data-pt="anos de experiência" data-en="years experience">anos de experiência</p>
+                                <p class="text-neutral-400 text-sm" data-pt="anos de experiência" data-en="years experience">years experience</p>
                             </div>
                         </div>
                     </div>
@@ -274,34 +257,34 @@
                 
                 <!-- Content -->
                 <div class="space-y-6">
-                    <div class="inline-block px-4 py-1 bg-red-500/10 border border-red-500/30 rounded-full">
-                        <span class="text-red-500 text-sm font-medium" data-pt="Sobre o Fundador" data-en="About the Founder">Sobre o Fundador</span>
+                    <div class="inline-block px-4 py-1 bg-neutral-900 border border-red-500/30 rounded-full">
+                        <span class="text-red-500 text-sm font-medium" data-pt="Sobre o Fundador" data-en="About the Founder">About the Founder</span>
                     </div>
                     
                     <h2 class="text-3xl sm:text-4xl font-bold">
-                        <span class="gradient-text">Rafael Cardoso dos Santos</span>
+                        <span class="text-white">Rafael Cardoso dos Santos</span>
                     </h2>
                     
-                    <p class="text-lg text-neutral-400 leading-relaxed" data-pt="Senior Site Reliability & Platform Engineer com mais de 15 anos de experiência em TI, especializado em arquitetar e operar sistemas de alta disponibilidade para clientes enterprise e internacionais. Minha missão é transformar infraestrutura complexa em soluções elegantes, automatizadas e confiáveis que impulsionam negócios globais." data-en="Senior Site Reliability & Platform Engineer with 15+ years of IT experience, specialized in architecting and operating high-availability systems for enterprise and international clients. My mission is to transform complex infrastructure into elegant, automated, and reliable solutions that power global businesses.">
+                    <p class="text-lg text-neutral-300 leading-relaxed" data-pt="Senior Site Reliability & Platform Engineer com mais de 15 anos de experiência em TI, especializado em arquitetar e operar sistemas de alta disponibilidade para clientes enterprise e internacionais. Minha missão é transformar infraestrutura complexa em soluções elegantes, automatizadas e confiáveis que impulsionam negócios globais." data-en="Senior Site Reliability & Platform Engineer with 15+ years of IT experience, specialized in architecting and operating high-availability systems for enterprise and international clients. My mission is to transform complex infrastructure into elegant, automated, and reliable solutions that power global businesses.">
                         Senior Site Reliability & Platform Engineer with 15+ years of IT experience, specialized in architecting and operating high-availability systems for enterprise and international clients. My mission is to transform complex infrastructure into elegant, automated, and reliable solutions that power global businesses.
                     </p>
                     
-                    <div class="grid grid-cols-2 gap-4 pt-4">
+                    <div class="grid grid-cols-2 gap-4 pt-4 text-sm">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-map-marker-alt text-red-500"></i>
                             <span class="text-neutral-300">Joinville, SC, Brazil</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-globe text-red-500"></i>
-                            <span class="text-neutral-300" data-pt="Atendimento Mundial" data-en="Serving Worldwide">Atendimento Mundial</span>
+                            <span class="text-neutral-300" data-pt="Atendimento Mundial" data-en="Serving Worldwide">Serving Worldwide</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <i class="fab fa-linkedin text-red-500"></i>
-                            <a href="https://www.linkedin.com/in/rafa-cardoso" target="_blank" class="text-neutral-300 hover:text-red-500 transition-colors">LinkedIn</a>
+                            <a href="https://www.linkedin.com/in/rafa-cardoso" target="_blank" class="text-neutral-300 hover:text-white transition-colors">LinkedIn Profile</a>
                         </div>
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-envelope text-red-500"></i>
-                            <a href="mailto:raafa001@gmail.com" class="text-neutral-300 hover:text-red-500 transition-colors">raafa001@gmail.com</a>
+                            <a href="mailto:raafa001@gmail.com" class="text-neutral-300 hover:text-white transition-colors">raafa001@gmail.com</a>
                         </div>
                     </div>
                 </div>
@@ -310,11 +293,11 @@
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-20 px-4 sm:px-6 lg:px-8">
+    <section id="services" class="py-20 px-4 sm:px-6 lg:px-8 bg-black">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
-                <span class="text-red-500 font-medium" data-pt="Nossos Serviços" data-en="Our Services">Nossos Serviços</span>
-                <h2 class="text-3xl sm:text-4xl font-bold mt-2" data-pt="Soluções Complete para Infraestrutura Moderna" data-en="Complete Solutions for Modern Infrastructure">Complete Solutions for Modern Infrastructure</h2>
+                <span class="text-red-500 font-medium" data-pt="Nossos Serviços" data-en="Our Services">Our Services</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 text-white" data-pt="Soluções Completas para Infraestrutura Moderna" data-en="Complete Solutions for Modern Infrastructure">Complete Solutions for Modern Infrastructure</h2>
                 <p class="text-neutral-400 mt-4 max-w-2xl mx-auto" data-pt="Do design à operação, entregamos soluções end-to-end que transformam sua infraestrutura em uma vantagem competitiva." data-en="From design to operation, we deliver end-to-end solutions that transform your infrastructure into a competitive advantage.">
                     From design to operation, we deliver end-to-end solutions that transform your infrastructure into a competitive advantage.
                 </p>
@@ -322,97 +305,97 @@
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Service 1 -->
-                <div class="group p-6 bg-neutral-900/50 rounded-xl glow-border hover:glow-box transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div class="group p-6 bg-neutral-950 rounded-xl glow-border hover:glow-box transition-all duration-300">
+                    <div class="w-14 h-14 bg-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fas fa-cloud text-red-500 text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2" data-pt="Arquitetura Cloud & Migração" data-en="Cloud Architecture & Migration">Cloud Architecture & Migration</h3>
+                    <h3 class="text-xl font-semibold mb-2 text-white" data-pt="Arquitetura Cloud & Migração" data-en="Cloud Architecture & Migration">Cloud Architecture & Migration</h3>
                     <p class="text-neutral-400 text-sm mb-4" data-pt="AWS, GCP, IaC com Terraform. Design de arquiteturas escaláveis e migrações zero-downtime para clouds públicos." data-en="AWS, GCP, IaC with Terraform. Scalable architecture design and zero-downtime migrations to public clouds.">
                         AWS, GCP, IaC with Terraform. Scalable architecture design and zero-downtime migrations to public clouds.
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">AWS</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">GCP</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Terraform</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">AWS</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">GCP</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Terraform</span>
                     </div>
                 </div>
                 
                 <!-- Service 2 -->
-                <div class="group p-6 bg-neutral-900/50 rounded-xl glow-border hover:glow-box transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div class="group p-6 bg-neutral-950 rounded-xl glow-border hover:glow-box transition-all duration-300">
+                    <div class="w-14 h-14 bg-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fas fa-dharmachakra text-red-500 text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2" data-pt="Kubernetes & Orquestração" data-en="Kubernetes & Container Orchestration">Kubernetes & Container Orchestration</h3>
+                    <h3 class="text-xl font-semibold mb-2 text-white" data-pt="Kubernetes & Orquestração" data-en="Kubernetes & Container Orchestration">Kubernetes & Container Orchestration</h3>
                     <p class="text-neutral-400 text-sm mb-4" data-pt="EKS, GKE, Helm, Docker. Clusters de produção com alta disponibilidade e auto-scaling inteligente." data-en="EKS, GKE, Helm, Docker. Production-grade clusters with high availability and intelligent auto-scaling.">
                         EKS, GKE, Helm, Docker. Production-grade clusters with high availability and intelligent auto-scaling.
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">EKS</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">GKE</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Helm</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">EKS</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">GKE</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Helm</span>
                     </div>
                 </div>
                 
                 <!-- Service 3 -->
-                <div class="group p-6 bg-neutral-900/50 rounded-xl glow-border hover:glow-box transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div class="group p-6 bg-neutral-950 rounded-xl glow-border hover:glow-box transition-all duration-300">
+                    <div class="w-14 h-14 bg-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fas fa-chart-line text-red-500 text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2" data-pt="Observabilidade, SLOs & Incidentes" data-en="Observability, SLOs & Incident Response">Observability, SLOs & Incident Response</h3>
+                    <h3 class="text-xl font-semibold mb-2 text-white" data-pt="Observabilidade, SLOs & Incidentes" data-en="Observability, SLOs & Incident Response">Observability, SLOs & Incident Response</h3>
                     <p class="text-neutral-400 text-sm mb-4" data-pt="Datadog, Prometheus, Grafana. Dashboards customizados, alerting inteligente e resposta rápida a incidentes." data-en="Datadog, Prometheus, Grafana. Custom dashboards, intelligent alerting, and rapid incident response.">
                         Datadog, Prometheus, Grafana. Custom dashboards, intelligent alerting, and rapid incident response.
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Datadog</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Grafana</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Prometheus</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Datadog</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Grafana</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Prometheus</span>
                     </div>
                 </div>
                 
                 <!-- Service 4 -->
-                <div class="group p-6 bg-neutral-900/50 rounded-xl glow-border hover:glow-box transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div class="group p-6 bg-neutral-950 rounded-xl glow-border hover:glow-box transition-all duration-300">
+                    <div class="w-14 h-14 bg-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fas fa-ship text-red-500 text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2" data-pt="CI/CD Modernização & Segurança" data-en="CI/CD Modernization & Security">CI/CD Modernization & Security</h3>
+                    <h3 class="text-xl font-semibold mb-2 text-white" data-pt="CI/CD Modernização & Segurança" data-en="CI/CD Modernization & Security">CI/CD Modernization & Security</h3>
                     <p class="text-neutral-400 text-sm mb-4" data-pt="SAST/DAST, GitHub Actions, GitOps. Pipelines seguros e automatizados do código ao produção." data-en="SAST/DAST, GitHub Actions, GitOps. Secure and automated pipelines from code to production.">
                         SAST/DAST, GitHub Actions, GitOps. Secure and automated pipelines from code to production.
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">GitHub Actions</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">ArgoCD</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">SonarQube</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">GitHub Actions</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">ArgoCD</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">SonarQube</span>
                     </div>
                 </div>
                 
                 <!-- Service 5 -->
-                <div class="group p-6 bg-neutral-900/50 rounded-xl glow-border hover:glow-box transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div class="group p-6 bg-neutral-950 rounded-xl glow-border hover:glow-box transition-all duration-300">
+                    <div class="w-14 h-14 bg-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fas fa-bolt text-red-500 text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2" data-pt="Mensageria & Streaming" data-en="Messaging & Streaming Engineering">Messaging & Streaming Engineering</h3>
+                    <h3 class="text-xl font-semibold mb-2 text-white" data-pt="Mensageria & Streaming" data-en="Messaging & Streaming Engineering">Messaging & Streaming Engineering</h3>
                     <p class="text-neutral-400 text-sm mb-4" data-pt="Apache Kafka, MSK, Pub/Sub. Arquiteturas de eventos escaláveis para processamento em tempo real." data-en="Apache Kafka, MSK, Pub/Sub. Scalable event-driven architectures for real-time processing.">
                         Apache Kafka, MSK, Pub/Sub. Scalable event-driven architectures for real-time processing.
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Kafka</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">MSK</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Pub/Sub</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Kafka</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">MSK</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Pub/Sub</span>
                     </div>
                 </div>
                 
                 <!-- Service 6 -->
-                <div class="group p-6 bg-neutral-900/50 rounded-xl glow-border hover:glow-box transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div class="group p-6 bg-neutral-950 rounded-xl glow-border hover:glow-box transition-all duration-300">
+                    <div class="w-14 h-14 bg-neutral-900 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fas fa-dollar-sign text-red-500 text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2" data-pt="FinOps & Otimização de Custos" data-en="FinOps & Cloud Cost Optimization">FinOps & Cloud Cost Optimization</h3>
+                    <h3 class="text-xl font-semibold mb-2 text-white" data-pt="FinOps & Otimização de Custos" data-en="FinOps & Cloud Cost Optimization">FinOps & Cloud Cost Optimization</h3>
                     <p class="text-neutral-400 text-sm mb-4" data-pt="Right-sizing baseado em métricas. Redução de 30% nos custos de infraestrutura com performance garantida." data-en="Metrics-based right-sizing. 30% reduction in infrastructure costs with guaranteed performance.">
                         Metrics-based right-sizing. 30% reduction in infrastructure costs with guaranteed performance.
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Cost Explorer</span>
-                        <span class="px-2 py-1 bg-neutral-800/50 text-xs text-red-500 rounded">Billing</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Cost Optimization</span>
+                        <span class="px-2 py-1 bg-neutral-900 text-xs text-red-400 rounded border border-neutral-800">Right-Sizing</span>
                     </div>
                 </div>
             </div>
@@ -420,51 +403,51 @@
     </section>
 
     <!-- Impact / Metrics Section -->
-    <section id="impact" class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-900/50">
+    <section id="impact" class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-950 border-y border-neutral-900">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
-                <span class="text-red-500 font-medium" data-pt="Resultados Comprovados" data-en="Proven Results">Resultados Comprovados</span>
-                <h2 class="text-3xl sm:text-4xl font-bold mt-2" data-pt="Impacto Real em Produção" data-en="Real-World Production Impact">Real-World Production Impact</h2>
+                <span class="text-red-500 font-medium" data-pt="Resultados Comprovados" data-en="Proven Results">Proven Results</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 text-white" data-pt="Impacto Real em Produção" data-en="Real-World Production Impact">Real-World Production Impact</h2>
             </div>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <!-- Metric 1 -->
-                <div class="text-center p-6">
-                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-2xl flex items-center justify-center mb-4 glow-border">
-                        <i class="fas fa-rocket text-red-500 text-3xl"></i>
+                <div class="text-center p-6 bg-black rounded-2xl glow-border">
+                    <div class="w-16 h-16 mx-auto bg-neutral-900 rounded-2xl flex items-center justify-center mb-4">
+                        <i class="fas fa-rocket text-red-500 text-2xl"></i>
                     </div>
-                    <p class="text-5xl font-bold gradient-text mb-2">75%</p>
-                    <p class="text-neutral-400" data-pt="redução em tempo de build" data-en="faster build times">redução em tempo de build</p>
-                    <p class="text-sm text-neutral-500 mt-2" data-pt="via modernização de CI/CD" data-en="via CI/CD pipeline modernization">via modernização de CI/CD</p>
+                    <p class="text-5xl font-extrabold text-white mb-2">75%</p>
+                    <p class="text-neutral-300 font-medium" data-pt="redução em tempo de build" data-en="faster build times">faster build times</p>
+                    <p class="text-sm text-neutral-500 mt-2" data-pt="via modernização de CI/CD" data-en="via CI/CD pipeline modernization">via CI/CD pipeline modernization</p>
                 </div>
                 
                 <!-- Metric 2 -->
-                <div class="text-center p-6">
-                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-2xl flex items-center justify-center mb-4 glow-border">
-                        <i class="fas fa-piggy-bank text-red-500 text-3xl"></i>
+                <div class="text-center p-6 bg-black rounded-2xl glow-border">
+                    <div class="w-16 h-16 mx-auto bg-neutral-900 rounded-2xl flex items-center justify-center mb-4">
+                        <i class="fas fa-piggy-bank text-red-500 text-2xl"></i>
                     </div>
-                    <p class="text-5xl font-bold gradient-text mb-2">30%</p>
-                    <p class="text-neutral-400" data-pt="redução em custos cloud" data-en="cloud cost reduction">redução em custos cloud</p>
+                    <p class="text-5xl font-extrabold text-white mb-2">30%</p>
+                    <p class="text-neutral-300 font-medium" data-pt="redução em custos cloud" data-en="cloud cost reduction">cloud cost reduction</p>
                     <p class="text-sm text-neutral-500 mt-2" data-pt="via FinOps & right-sizing" data-en="via FinOps & right-sizing">via FinOps & right-sizing</p>
                 </div>
                 
                 <!-- Metric 3 -->
-                <div class="text-center p-6">
-                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-2xl flex items-center justify-center mb-4 glow-border">
-                        <i class="fas fa-shield-alt text-red-500 text-3xl"></i>
+                <div class="text-center p-6 bg-black rounded-2xl glow-border">
+                    <div class="w-16 h-16 mx-auto bg-neutral-900 rounded-2xl flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-red-500 text-2xl"></i>
                     </div>
-                    <p class="text-5xl font-bold gradient-text mb-2">99.99%</p>
-                    <p class="text-neutral-400" data-pt="disponibilidade do sistema" data-en="system availability SLA">disponibilidade do sistema</p>
-                    <p class="text-sm text-neutral-500 mt-2" data-pt="via observabilidade proativa" data-en="via proactive observability">via observabilidade proativa</p>
+                    <p class="text-5xl font-extrabold text-white mb-2">99.99%</p>
+                    <p class="text-neutral-300 font-medium" data-pt="disponibilidade do sistema" data-en="system availability SLA">system availability SLA</p>
+                    <p class="text-sm text-neutral-500 mt-2" data-pt="via observabilidade proativa" data-en="via proactive observability">via proactive observability</p>
                 </div>
                 
                 <!-- Metric 4 -->
-                <div class="text-center p-6">
-                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-red-500/20 to-neutral-900 rounded-2xl flex items-center justify-center mb-4 glow-border">
-                        <i class="fas fa-fire text-red-500 text-3xl"></i>
+                <div class="text-center p-6 bg-black rounded-2xl glow-border">
+                    <div class="w-16 h-16 mx-auto bg-neutral-900 rounded-2xl flex items-center justify-center mb-4">
+                        <i class="fas fa-fire text-red-500 text-2xl"></i>
                     </div>
-                    <p class="text-5xl font-bold gradient-text mb-2">100%</p>
-                    <p class="text-neutral-400" data-pt="uptime em picos de demanda" data-en="uptime during peak events">uptime em picos de demanda</p>
+                    <p class="text-5xl font-extrabold text-white mb-2">100%</p>
+                    <p class="text-neutral-300 font-medium" data-pt="uptime em picos de demanda" data-en="uptime during peak events">uptime during peak events</p>
                     <p class="text-sm text-neutral-500 mt-2" data-pt="ex: Black Friday" data-en="ex: Black Friday">ex: Black Friday</p>
                 </div>
             </div>
@@ -472,98 +455,86 @@
     </section>
 
     <!-- Tech Stack Section -->
-    <section id="stack" class="py-20 px-4 sm:px-6 lg:px-8">
+    <section id="stack" class="py-20 px-4 sm:px-6 lg:px-8 bg-black">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
-                <span class="text-red-500 font-medium" data-pt="Ecossistema Tecnológico" data-en="Tech Ecosystem">Ecossistema Tecnológico</span>
-                <h2 class="text-3xl sm:text-4xl font-bold mt-2" data-pt="Stack que Dominamos" data-en="Stack We Master">Stack que Dominamos</h2>
+                <span class="text-red-500 font-medium" data-pt="Ecossistema Tecnológico" data-en="Tech Ecosystem">Tech Ecosystem</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 text-white" data-pt="Stack que Dominamos" data-en="Stack We Master">Stack We Master</h2>
                 <p class="text-neutral-400 mt-4" data-pt="Tecnologias líderes de mercado para entregar soluções robustas e escaláveis" data-en="Market-leading technologies to deliver robust and scalable solutions">
-                    Tecnologias líderes de mercado para entregar soluções robustas e escaláveis
+                    Market-leading technologies to deliver robust and scalable solutions
                 </p>
             </div>
             
             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6">
-                <!-- AWS -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fab fa-aws text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">AWS</span>
+                    <span class="text-xs text-neutral-300">AWS</span>
                 </div>
                 
-                <!-- GCP -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fas fa-cloud text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">GCP</span>
+                    <span class="text-xs text-neutral-300">GCP</span>
                 </div>
                 
-                <!-- Kubernetes -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fas fa-dharmachakra text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">Kubernetes</span>
+                    <span class="text-xs text-neutral-300">Kubernetes</span>
                 </div>
                 
-                <!-- Terraform -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fas fa-drafting-compass text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">Terraform</span>
+                    <span class="text-xs text-neutral-300">Terraform</span>
                 </div>
                 
-                <!-- Kafka -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fas fa-bolt text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">Kafka</span>
+                    <span class="text-xs text-neutral-300">Kafka</span>
                 </div>
                 
-                <!-- Docker -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fab fa-docker text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">Docker</span>
+                    <span class="text-xs text-neutral-300">Docker</span>
                 </div>
                 
-                <!-- Python -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fab fa-python text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">Python</span>
+                    <span class="text-xs text-neutral-300">Python</span>
                 </div>
                 
-                <!-- Linux -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fab fa-linux text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">Linux</span>
+                    <span class="text-xs text-neutral-300">Linux</span>
                 </div>
                 
-                <!-- GitHub -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fab fa-github text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">GitHub</span>
+                    <span class="text-xs text-neutral-300">GitHub</span>
                 </div>
                 
-                <!-- Datadog -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fas fa-chart-bar text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">Datadog</span>
+                    <span class="text-xs text-neutral-300">Datadog</span>
                 </div>
                 
-                <!-- Grafana -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fas fa-chart-line text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">Grafana</span>
+                    <span class="text-xs text-neutral-300">Grafana</span>
                 </div>
                 
-                <!-- PostgreSQL -->
-                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-900/50 rounded-xl glow-border cursor-pointer">
+                <div class="tech-icon flex flex-col items-center p-4 bg-neutral-950 rounded-xl glow-border cursor-pointer">
                     <i class="fas fa-database text-4xl text-red-500 mb-2"></i>
-                    <span class="text-xs text-neutral-400">PostgreSQL</span>
+                    <span class="text-xs text-neutral-300">PostgreSQL</span>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-900/50">
+    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-950 border-t border-neutral-900">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-16">
-                <span class="text-red-500 font-medium" data-pt="Vamos Conversar" data-en="Let's Talk">Vamos Conversar</span>
-                <h2 class="text-3xl sm:text-4xl font-bold mt-2" data-pt="Entre em Contato" data-en="Get in Touch">Get in Touch</h2>
+                <span class="text-red-500 font-medium" data-pt="Vamos Conversar" data-en="Let's Talk">Let's Talk</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 text-white" data-pt="Entre em Contato" data-en="Get in Touch">Get in Touch</h2>
                 <p class="text-neutral-400 mt-4 max-w-xl mx-auto" data-pt="Pronto para transformar sua infraestrutura? Vamos discutir como posso ajudar seu negócio a escalar com confiança." data-en="Ready to transform your infrastructure? Let's discuss how I can help your business scale with confidence.">
                     Ready to transform your infrastructure? Let's discuss how I can help your business scale with confidence.
                 </p>
@@ -571,35 +542,35 @@
             
             <div class="grid sm:grid-cols-3 gap-6 mb-12">
                 <!-- WhatsApp -->
-                <a href="https://wa.me/5547984493186" target="_blank" class="flex flex-col items-center p-8 bg-neutral-800/50 rounded-2xl glow-border hover:glow-box transition-all group">
-                    <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <a href="https://wa.me/5547984493186" target="_blank" class="flex flex-col items-center p-8 bg-black rounded-2xl glow-border hover:glow-box transition-all group">
+                    <div class="w-16 h-16 bg-green-950/60 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fab fa-whatsapp text-green-400 text-3xl"></i>
                     </div>
-                    <h3 class="font-semibold mb-1">WhatsApp</h3>
+                    <h3 class="font-semibold mb-1 text-white">WhatsApp</h3>
                     <p class="text-neutral-400 text-sm">+55 47 984493186</p>
                 </a>
                 
                 <!-- Email -->
-                <a href="mailto:raafa001@gmail.com" class="flex flex-col items-center p-8 bg-neutral-800/50 rounded-2xl glow-border hover:glow-box transition-all group">
-                    <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <a href="mailto:raafa001@gmail.com" class="flex flex-col items-center p-8 bg-black rounded-2xl glow-border hover:glow-box transition-all group">
+                    <div class="w-16 h-16 bg-red-950/60 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fas fa-envelope text-red-500 text-3xl"></i>
                     </div>
-                    <h3 class="font-semibold mb-1">Email</h3>
+                    <h3 class="font-semibold mb-1 text-white">Email</h3>
                     <p class="text-neutral-400 text-sm">raafa001@gmail.com</p>
                 </a>
                 
                 <!-- LinkedIn -->
-                <a href="https://www.linkedin.com/in/rafa-cardoso" target="_blank" class="flex flex-col items-center p-8 bg-neutral-800/50 rounded-2xl glow-border hover:glow-box transition-all group">
-                    <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <a href="https://www.linkedin.com/in/rafa-cardoso" target="_blank" class="flex flex-col items-center p-8 bg-black rounded-2xl glow-border hover:glow-box transition-all group">
+                    <div class="w-16 h-16 bg-blue-950/60 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <i class="fab fa-linkedin text-blue-400 text-3xl"></i>
                     </div>
-                    <h3 class="font-semibold mb-1">LinkedIn</h3>
+                    <h3 class="font-semibold mb-1 text-white">LinkedIn</h3>
                     <p class="text-neutral-400 text-sm">Rafael Cardoso</p>
                 </a>
             </div>
             
             <div class="text-center">
-                <a href="https://wa.me/5547984493186" target="_blank" class="inline-flex items-center space-x-2 px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all shadow-lg shadow-red-500/20 pulse-glow">
+                <a href="https://wa.me/5547984493186" target="_blank" class="inline-flex items-center space-x-2 px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all shadow-lg shadow-red-900/30 pulse-glow">
                     <i class="fab fa-whatsapp text-xl"></i>
                     <span data-pt="Iniciar Conversa no WhatsApp" data-en="Start Conversation on WhatsApp">Start Conversation on WhatsApp</span>
                 </a>
@@ -608,16 +579,16 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 px-4 sm:px-6 lg:px-8 border-t border-neutral-800">
+    <footer class="py-12 px-4 sm:px-6 lg:px-8 border-t border-neutral-900 bg-black">
         <div class="max-w-7xl mx-auto">
             <div class="grid md:grid-cols-3 gap-8 mb-8">
                 <!-- Brand -->
                 <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
                             <i class="fas fa-cloud text-white text-sm"></i>
                         </div>
-                        <span class="font-bold text-lg">CARDOSO <span class="text-red-500">CLOUD</span> & SRE</span>
+                        <span class="font-bold text-lg text-white">CARDOSO <span class="text-red-500">CLOUD</span> & SRE</span>
                     </div>
                     <p class="text-neutral-400 text-sm" data-pt="Consultoria independente em arquitetura cloud e engenharia de confiabilidade. Transformando infraestrutura em vantagem competitiva." data-en="Independent consulting in cloud architecture and reliability engineering. Transforming infrastructure into competitive advantage.">
                         Independent consulting in cloud architecture and reliability engineering. Transforming infrastructure into competitive advantage.
@@ -626,34 +597,34 @@
                 
                 <!-- Quick Links -->
                 <div>
-                    <h4 class="font-semibold mb-4" data-pt="Links Rápidos" data-en="Quick Links">Links Rápidos</h4>
+                    <h4 class="font-semibold mb-4 text-white" data-pt="Links Rápidos" data-en="Quick Links">Quick Links</h4>
                     <div class="grid grid-cols-2 gap-2 text-sm">
-                        <a href="#about" class="text-neutral-400 hover:text-red-500 transition-colors" data-pt="Sobre" data-en="About">Sobre</a>
-                        <a href="#services" class="text-neutral-400 hover:text-red-500 transition-colors" data-pt="Serviços" data-en="Services">Serviços</a>
-                        <a href="#impact" class="text-neutral-400 hover:text-red-500 transition-colors" data-pt="Impacto" data-en="Impact">Impacto</a>
-                        <a href="#stack" class="text-neutral-400 hover:text-red-500 transition-colors" data-pt="Stack" data-en="Stack">Stack</a>
-                        <a href="#contact" class="text-neutral-400 hover:text-red-500 transition-colors" data-pt="Contato" data-en="Contact">Contato</a>
+                        <a href="#about" class="text-neutral-400 hover:text-white transition-colors" data-pt="Sobre" data-en="About">About</a>
+                        <a href="#services" class="text-neutral-400 hover:text-white transition-colors" data-pt="Serviços" data-en="Services">Services</a>
+                        <a href="#impact" class="text-neutral-400 hover:text-white transition-colors" data-pt="Impacto" data-en="Impact">Impact</a>
+                        <a href="#stack" class="text-neutral-400 hover:text-white transition-colors" data-pt="Stack" data-en="Stack">Stack</a>
+                        <a href="#contact" class="text-neutral-400 hover:text-white transition-colors" data-pt="Contato" data-en="Contact">Contact</a>
                     </div>
                 </div>
                 
                 <!-- Contact -->
                 <div>
-                    <h4 class="font-semibold mb-4" data-pt="Contato" data-en="Contact">Contato</h4>
+                    <h4 class="font-semibold mb-4 text-white" data-pt="Contato" data-en="Contact">Contact</h4>
                     <div class="space-y-2 text-sm">
                         <p class="text-neutral-400"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>Joinville, SC, Brazil</p>
-                        <p class="text-neutral-400"><i class="fas fa-globe text-red-500 mr-2"></i><span data-pt="Atendimento Mundial" data-en="Serving Worldwide">Atendimento Mundial</span></p>
-                        <a href="mailto:raafa001@gmail.com" class="text-neutral-400 hover:text-red-500 transition-colors block"><i class="fas fa-envelope text-red-500 mr-2"></i>raafa001@gmail.com</a>
+                        <p class="text-neutral-400"><i class="fas fa-globe text-red-500 mr-2"></i><span data-pt="Atendimento Mundial" data-en="Serving Worldwide">Serving Worldwide</span></p>
+                        <a href="mailto:raafa001@gmail.com" class="text-neutral-400 hover:text-white transition-colors block"><i class="fas fa-envelope text-red-500 mr-2"></i>raafa001@gmail.com</a>
                     </div>
                 </div>
             </div>
             
-            <div class="border-t border-neutral-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-neutral-500 text-sm">© 2024 CARDOSO CLOUD & SRE LTDA. <span data-pt="Todos os direitos reservados." data-en="All rights reserved.">Todos os direitos reservados.</span></p>
+            <div class="border-t border-neutral-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-neutral-500 text-sm">© 2026 CARDOSO CLOUD & SRE LTDA. <span data-pt="Todos os direitos reservados." data-en="All rights reserved.">All rights reserved.</span></p>
                 <div class="flex items-center space-x-4">
-                    <a href="https://www.linkedin.com/in/rafa-cardoso" target="_blank" class="w-10 h-10 bg-neutral-800/50 rounded-lg flex items-center justify-center text-neutral-400 hover:text-red-500 hover:bg-neutral-800 transition-all">
+                    <a href="https://www.linkedin.com/in/rafa-cardoso" target="_blank" class="w-10 h-10 bg-neutral-900 rounded-lg flex items-center justify-center text-neutral-400 hover:text-white hover:bg-neutral-800 transition-all">
                         <i class="fab fa-linkedin"></i>
                     </a>
-                    <a href="https://wa.me/5547984493186" target="_blank" class="w-10 h-10 bg-neutral-800/50 rounded-lg flex items-center justify-center text-neutral-400 hover:text-green-400 hover:bg-neutral-800 transition-all">
+                    <a href="https://wa.me/5547984493186" target="_blank" class="w-10 h-10 bg-neutral-900 rounded-lg flex items-center justify-center text-neutral-400 hover:text-green-400 hover:bg-neutral-800 transition-all">
                         <i class="fab fa-whatsapp"></i>
                     </a>
                 </div>
@@ -663,23 +634,36 @@
 
     <!-- JavaScript -->
     <script>
-        // Language Toggle
+        // Language Switching Logic
         let currentLang = 'en';
         
         const langToggle = document.getElementById('langToggle');
         const currentLangDisplay = document.getElementById('currentLang');
         
-        langToggle.addEventListener('click', () => {
-            currentLang = currentLang === 'en' ? 'pt' : 'en';
+        function updateLanguage(lang) {
+            currentLang = lang;
             currentLangDisplay.textContent = currentLang.toUpperCase();
             document.documentElement.lang = currentLang;
             
             document.querySelectorAll('[data-en][data-pt]').forEach(el => {
-                el.textContent = el.getAttribute(`data-${currentLang}`);
+                const targetText = el.getAttribute(`data-${currentLang}`);
+                if (targetText) {
+                    el.textContent = targetText;
+                }
             });
+        }
+
+        langToggle.addEventListener('click', () => {
+            const nextLang = currentLang === 'en' ? 'pt' : 'en';
+            updateLanguage(nextLang);
+        });
+
+        // Initialize with English on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLanguage('en');
         });
         
-        // Mobile Menu
+        // Mobile Menu Logic
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
         
@@ -687,15 +671,16 @@
             mobileMenu.classList.toggle('active');
             const icon = mobileMenuBtn.querySelector('i');
             icon.classList.toggle('fa-bars');
-            icon.class.toggle('fa-times');
+            icon.classList.toggle('fa-xmark');
         });
         
         // Close mobile menu when clicking links
         mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.remove('active');
-                mobileMenuBtn.querySelector('i').classList.add('fa-bars');
-                mobileMenuBtn.querySelector('i').classList.remove('fa-times');
+                const icon = mobileMenuBtn.querySelector('i');
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-xmark');
             });
         });
         
