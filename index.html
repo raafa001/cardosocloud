@@ -792,9 +792,8 @@
                 employmentType: '',
                 paymentType: '',
                 budget: '',
-                budgetHourly: '',
-                budgetMonthly: '',
-                budgetYearly: '',
+                stack: '',
+                startTime: '',
                 benefits: [],
                 availability: ''
             },
@@ -914,6 +913,20 @@
                     { label: 'Sim, disponível', value: 'Sim, disponível para chamada' },
                     { label: 'Não, email apenas', value: 'Não, prefiro email primeiro' },
                     { label: 'Vamos agendar', value: 'Sim, vamos agendar uma chamada' }
+                ]
+            },
+            startTime: {
+                en: [
+                    { label: 'Immediate', value: 'Immediate' },
+                    { label: '1 week', value: '1 week' },
+                    { label: '2 weeks', value: '2 weeks' },
+                    { label: '1 month', value: '1 month' }
+                ],
+                pt: [
+                    { label: 'Imediato', value: 'Immediate' },
+                    { label: '1 semana', value: '1 week' },
+                    { label: '2 semanas', value: '2 weeks' },
+                    { label: '1 mês', value: '1 month' }
                 ]
             }
         };
@@ -1258,6 +1271,18 @@
                 buttonsContainer.appendChild(btn);
             });
             
+            // Add Done button for benefits to allow multiple selections
+            if (field === 'benefits') {
+                const doneBtn = document.createElement('button');
+                doneBtn.className = 'px-3 py-1.5 bg-green-700 hover:bg-green-600 border border-green-500 text-green-200 text-xs rounded-full transition-colors';
+                doneBtn.textContent = chatLang === 'en' ? 'Done' : 'Concluir';
+                doneBtn.onclick = () => {
+                    hideQuickReplies();
+                    moveToNextField();
+                };
+                buttonsContainer.appendChild(doneBtn);
+            }
+            
             quickRepliesContainer.classList.remove('hidden');
         }
         
@@ -1312,7 +1337,7 @@
                     const prompt = getCurrentFieldPrompt();
                     addMessage(prompt);
                     showQuickReplies(nextField);
-                    if (!['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'benefits', 'availability'].includes(nextField)) {
+                    if (!['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'stack', 'startTime', 'benefits', 'availability'].includes(nextField)) {
                         showTextInput();
                     }
                 }, 300);
@@ -1338,6 +1363,8 @@
             if (c.currency === 'BRL' && !c.employmentType) return 'employmentType';
             if (!c.paymentType) return 'paymentType';
             if (!c.budget) return 'budget';
+            if (!c.stack) return 'stack';
+            if (!c.startTime) return 'startTime';
             if (!c.benefits || c.benefits.length === 0) return 'benefits';
             if (!c.availability) return 'availability';
             return null; // all collected
@@ -1358,6 +1385,8 @@
                     employmentType: "What type of employment contract?",
                     paymentType: "Is the salary per hour, monthly, or yearly?",
                     budget: "What's the budget range for this position?",
+                    stack: "What technologies or stacks are required for this position?",
+                    startTime: "When should the candidate start?",
                     benefits: "Does the company offer any benefits?",
                     availability: "Are you available for a call to discuss this opportunity?"
                 },
@@ -1372,6 +1401,8 @@
                     employmentType: "Qual tipo de contrato de trabalho?",
                     paymentType: "O salário é por hora, mensal ou anual?",
                     budget: "Qual é a faixa de orçamento para esta posição?",
+                    stack: "Quais tecnologias ou stacks são necessárias para esta posição?",
+                    startTime: "Quando o candidato deve começar?",
                     benefits: "A empresa oferece algum benefício?",
                     availability: "Você está disponível para uma chamada para discutir esta oportunidade?"
                 }
@@ -1404,8 +1435,10 @@
             text += `\n${isEN ? 'Name' : 'Nome'}: ${c.name}`;
             text += `\n${isEN ? 'Company' : 'Empresa'}: ${c.company}`;
             text += `\n${isEN ? 'Position' : 'Posição'}: ${c.position}`;
+            if (c.stack) text += `\n${isEN ? 'Tech Stack' : 'Stack Tecnologica'}: ${c.stack}`;
             if (c.workload) text += `\n${isEN ? 'Work Type' : 'Regime'}: ${c.workload}`;
             if (c.duration) text += `\n${isEN ? 'Duration' : 'Duração'}: ${c.duration}`;
+            if (c.startTime) text += `\n${isEN ? 'Start Time' : 'Inicio'}: ${c.startTime}`;
             if (c.seniority) text += `\n${isEN ? 'Seniority' : 'Senioridade'}: ${seniorityLabels[c.seniority] || c.seniority}`;
             if (c.currency) text += `\n${isEN ? 'Currency' : 'Moeda'}: ${c.currency}`;
             if (c.employmentType) text += `\n${isEN ? 'Contract Type' : 'Tipo de Contrato'}: ${employmentLabels[c.employmentType] || c.employmentType}`;
@@ -1507,8 +1540,10 @@
                         await new Promise(r => setTimeout(r, 300));
                         hideTyping();
                         addMessage(getCurrentFieldPrompt());
-                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'benefits', 'availability'].includes(newNextField)) {
+                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'stack', 'startTime', 'benefits', 'availability'].includes(newNextField)) {
                             showQuickReplies(newNextField);
+                        } else {
+                            showTextInput();
                         }
                     }
                     return;
@@ -1518,7 +1553,7 @@
                 const currentField = getNextField();
                 
                 // Store text input for non-button fields
-                if (currentField && !['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'benefits', 'availability'].includes(currentField)) {
+                if (currentField && !['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'stack', 'startTime', 'benefits', 'availability'].includes(currentField)) {
                     jobCollectionState.collected[currentField] = message;
                     const newNextField = getNextField();
                     showTyping();
@@ -1531,7 +1566,7 @@
                             : `Entendi! Diga "pronto" ou "gerar" para criar a mensagem de contato.`);
                     } else {
                         addMessage(getCurrentFieldPrompt());
-                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'benefits', 'availability'].includes(newNextField)) {
+                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'stack', 'startTime', 'benefits', 'availability'].includes(newNextField)) {
                             showQuickReplies(newNextField);
                         } else {
                             showTextInput();
@@ -1556,6 +1591,8 @@
                         employmentType: '',
                         paymentType: '',
                         budget: '',
+                        stack: '',
+                        startTime: '',
                         benefits: [],
                         availability: ''
                     },
