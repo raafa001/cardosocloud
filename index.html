@@ -740,14 +740,20 @@
                 </div>
             </div>
             
-            <!-- WhatsApp Link Preview -->
-            <div id="whatsapp-preview" class="hidden mx-4 mb-2 p-3 bg-green-950/50 border border-green-500/30 rounded-xl">
-                <p class="text-green-400 text-xs font-semibold mb-1"><i class="fab fa-whatsapp mr-1"></i> WhatsApp Link Gerado:</p>
-                <p class="text-neutral-300 text-xs mb-2" id="whatsapp-preview-text"></p>
-                <a id="whatsapp-link-btn" href="#" target="_blank" class="inline-flex items-center space-x-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors">
-                    <i class="fab fa-whatsapp"></i>
-                    <span data-pt="Abrir WhatsApp" data-en="Open WhatsApp">Open WhatsApp</span>
-                </a>
+            <!-- Contact Options Preview -->
+            <div id="contact-preview" class="hidden mx-4 mb-2 p-3 bg-green-950/50 border border-green-500/30 rounded-xl">
+                <p class="text-green-400 text-xs font-semibold mb-2"><i class="fas fa-check mr-1"></i> <span data-pt="Mensagem pronta! Escolha como entrar em contato:" data-en="Message ready! Choose how to contact Rafael:">Message ready! Choose how to contact Rafael:</span></p>
+                <p class="text-neutral-300 text-xs mb-3" id="contact-preview-text"></p>
+                <div class="flex flex-col gap-2">
+                    <a id="whatsapp-link-btn" href="#" target="_blank" class="inline-flex items-center justify-center space-x-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        <i class="fab fa-whatsapp text-lg"></i>
+                        <span data-pt="Abrir WhatsApp" data-en="Open WhatsApp">Open WhatsApp</span>
+                    </a>
+                    <a id="email-link-btn" href="#" target="_blank" class="inline-flex items-center justify-center space-x-2 px-4 py-2.5 bg-neutral-700 hover:bg-neutral-600 text-white text-sm font-medium rounded-lg transition-colors">
+                        <i class="fas fa-envelope text-lg"></i>
+                        <span data-pt="Enviar Email" data-en="Send Email">Send Email</span>
+                    </a>
+                </div>
             </div>
             
             <!-- Quick Reply Buttons -->
@@ -779,9 +785,11 @@
                 name: '',
                 company: '',
                 position: '',
-                workload: '', // full-time, part-time, contract
-                duration: '', // long-term, short-term, project-based
+                workload: '',
+                duration: '',
+                paymentType: '',
                 budget: '',
+                benefits: [],
                 availability: ''
             },
             currentField: null
@@ -789,9 +797,9 @@
         
         // Quick reply options for each field
         const QUICK_REPLIES = {
-            name: null, // Text input
-            company: null, // Text input
-            position: null, // Text input
+            name: null,
+            company: null,
+            position: null,
             workload: {
                 en: [
                     { label: 'Full-time', value: 'Full-time (CLT)' },
@@ -820,7 +828,19 @@
                     { label: 'Não definido', value: 'Not defined yet' }
                 ]
             },
-            budget: {
+            paymentType: {
+                en: [
+                    { label: 'Per hour', value: 'hourly' },
+                    { label: 'Per month', value: 'monthly' },
+                    { label: 'Per year', value: 'yearly' }
+                ],
+                pt: [
+                    { label: 'Por hora', value: 'hourly' },
+                    { label: 'Por mês', value: 'monthly' },
+                    { label: 'Por ano', value: 'yearly' }
+                ]
+            },
+            budgetHourly: {
                 en: [
                     { label: '< $50/h', value: 'Less than $50/hour' },
                     { label: '$50-100/h', value: '$50-100/hour' },
@@ -834,6 +854,56 @@
                     { label: '> R$1200/h', value: 'More than R$1200/hour' }
                 ]
             },
+            budgetMonthly: {
+                en: [
+                    { label: '< $3k/month', value: 'Less than $3,000/month' },
+                    { label: '$3k-8k/month', value: '$3,000-8,000/month' },
+                    { label: '$8k-15k/month', value: '$8,000-15,000/month' },
+                    { label: '> $15k/month', value: 'More than $15,000/month' }
+                ],
+                pt: [
+                    { label: '< R$15k/mês', value: 'Less than R$15,000/month' },
+                    { label: 'R$15k-40k/mês', value: 'R$15,000-40,000/month' },
+                    { label: 'R$40k-80k/mês', value: 'R$40,000-80,000/month' },
+                    { label: '> R$80k/mês', value: 'More than R$80,000/month' }
+                ]
+            },
+            budgetYearly: {
+                en: [
+                    { label: '< $50k/year', value: 'Less than $50,000/year' },
+                    { label: '$50k-100k/year', value: '$50,000-100,000/year' },
+                    { label: '$100k-200k/year', value: '$100,000-200,000/year' },
+                    { label: '> $200k/year', value: 'More than $200,000/year' }
+                ],
+                pt: [
+                    { label: '< R$250k/ano', value: 'Less than R$250,000/year' },
+                    { label: 'R$250k-500k/ano', value: 'R$250,000-500,000/year' },
+                    { label: 'R$500k-1M/ano', value: 'R$500,000-1,000,000/year' },
+                    { label: '> R$1M/ano', value: 'More than R$1,000,000/year' }
+                ]
+            },
+            benefits: {
+                en: [
+                    { label: 'No benefits', value: 'none', exclusive: true },
+                    { label: 'Health insurance', value: 'Health insurance' },
+                    { label: 'Life insurance', value: 'Life insurance' },
+                    { label: 'Home office allowance', value: 'Home office allowance' },
+                    { label: 'Device allowance', value: 'Device allowance' },
+                    { label: 'Education/Certs', value: 'Education/Certifications allowance' },
+                    { label: 'Pension plan', value: 'Pension plan' },
+                    { label: 'Other', value: 'Other benefits' }
+                ],
+                pt: [
+                    { label: 'Sem benefícios', value: 'none', exclusive: true },
+                    { label: 'Plano de saúde', value: 'Plano de saúde' },
+                    { label: 'Seguro de vida', value: 'Seguro de vida' },
+                    { label: 'Auxílio home office', value: 'Auxílio home office' },
+                    { label: 'Auxílio dispositivo', value: 'Auxílio dispositivo' },
+                    { label: 'Cursos/Certificações', value: 'Auxílio educação/certificações' },
+                    { label: 'Previdência', value: 'Previdência privada' },
+                    { label: 'Outros', value: 'Outros benefícios' }
+                ]
+            },
             availability: {
                 en: [
                     { label: 'Yes, Im available', value: 'Yes, available for call' },
@@ -841,8 +911,8 @@
                     { label: 'Lets schedule', value: 'Yes, lets schedule a call' }
                 ],
                 pt: [
-                    { label: 'Sim, disponivel', value: 'Sim, disponivel para chamada' },
-                    { label: 'Nao, email apenas', value: 'Nao, prefiro email primeiro' },
+                    { label: 'Sim, disponível', value: 'Sim, disponível para chamada' },
+                    { label: 'Não, email apenas', value: 'Não, prefiro email primeiro' },
                     { label: 'Vamos agendar', value: 'Sim, vamos agendar uma chamada' }
                 ]
             }
@@ -860,9 +930,10 @@
         const chatInput = document.getElementById('chat-input');
         const chatSend = document.getElementById('chat-send');
         const chatLangIndicator = document.getElementById('chat-lang-indicator');
-        const whatsappPreview = document.getElementById('whatsapp-preview');
-        const whatsappPreviewText = document.getElementById('whatsapp-preview-text');
+        const whatsappPreview = document.getElementById('contact-preview');
+        const whatsappPreviewText = document.getElementById('contact-preview-text');
         const whatsappLinkBtn = document.getElementById('whatsapp-link-btn');
+        const emailLinkBtn = document.getElementById('email-link-btn');
         
         // Toggle chat window
         chatToggle.addEventListener('click', () => {
@@ -948,18 +1019,22 @@
             if (typing) typing.remove();
         }
         
-        // Show WhatsApp preview
-        function showWhatsAppPreview(link) {
-            const text = decodeURIComponent(link.split('text=')[1] || '').replace(/%0A/g, '\n');
+        // Show contact options preview
+        function showContactPreview() {
+            const text = generateContactContent();
             whatsappPreviewText.textContent = text;
-            whatsappLinkBtn.href = link;
+            whatsappLinkBtn.href = generateWhatsAppLink();
+            emailLinkBtn.href = generateEmailLink();
             whatsappPreview.classList.remove('hidden');
         }
         
-        // Hide WhatsApp preview
-        function hideWhatsAppPreview() {
+        // Hide contact preview
+        function hideContactPreview() {
             whatsappPreview.classList.add('hidden');
         }
+        
+        // Alias for backward compatibility
+        const hideWhatsAppPreview = hideContactPreview;
         
         // Check if message contains job keywords
         function containsJobKeywords(message) {
@@ -1038,7 +1113,20 @@
         function showQuickReplies(field) {
             const quickRepliesContainer = document.getElementById('quick-replies');
             const buttonsContainer = document.getElementById('quick-reply-buttons');
-            const options = QUICK_REPLIES[field]?.[chatLang];
+            
+            let options = QUICK_REPLIES[field]?.[chatLang];
+            
+            // Special handling for budget based on payment type
+            if (field === 'budget') {
+                const paymentType = jobCollectionState.collected.paymentType;
+                if (paymentType === 'hourly') {
+                    options = QUICK_REPLIES.budgetHourly?.[chatLang];
+                } else if (paymentType === 'monthly') {
+                    options = QUICK_REPLIES.budgetMonthly?.[chatLang];
+                } else if (paymentType === 'yearly') {
+                    options = QUICK_REPLIES.budgetYearly?.[chatLang];
+                }
+            }
             
             if (!options) {
                 quickRepliesContainer.classList.add('hidden');
@@ -1048,7 +1136,10 @@
             buttonsContainer.innerHTML = '';
             options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-red-500 text-neutral-200 text-xs rounded-full transition-colors';
+                const isExclusive = opt.exclusive;
+                btn.className = isExclusive 
+                    ? 'px-3 py-1.5 bg-red-900/50 hover:bg-red-800 border border-red-500/50 hover:border-red-400 text-red-200 text-xs rounded-full transition-colors'
+                    : 'px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-red-500 text-neutral-200 text-xs rounded-full transition-colors';
                 btn.textContent = opt.label;
                 btn.onclick = () => handleQuickReply(field, opt.value);
                 buttonsContainer.appendChild(btn);
@@ -1064,21 +1155,43 @@
         
         // Handle quick reply selection
         function handleQuickReply(field, value) {
+            // Handle benefits with exclusive selection
+            if (field === 'benefits') {
+                if (value === 'none') {
+                    jobCollectionState.collected.benefits = ['none'];
+                } else {
+                    if (!jobCollectionState.collected.benefits) jobCollectionState.collected.benefits = [];
+                    if (jobCollectionState.collected.benefits.includes('none')) {
+                        jobCollectionState.collected.benefits = [];
+                    }
+                    if (!jobCollectionState.collected.benefits.includes(value)) {
+                        jobCollectionState.collected.benefits.push(value);
+                    }
+                }
+                hideQuickReplies();
+                moveToNextField();
+                return;
+            }
+            
             jobCollectionState.collected[field] = value;
             hideQuickReplies();
             
             // Move to next field
+            moveToNextField();
+        }
+        
+        function moveToNextField() {
             const nextField = getNextField();
             if (nextField === null) {
-                // All collected, ask for job description
+                // All collected, show ready message
                 showTyping();
                 setTimeout(() => {
                     hideTyping();
-                    addMessage(chatLang === 'en'
-                        ? `Great! Now please describe the job responsibilities and requirements in more detail (or type 'skip' to skip this):`
-                        : `Ótimo! Agora descreva as responsabilidades e requisitos da vaga em mais detalhes (ou digite 'pular' para ignorar):`);
-                    jobCollectionState.collected.jobDescription = 'pending'; // Mark as pending text input
-                    showTextInput();
+                    const readyMsg = chatLang === 'en'
+                        ? `Perfect! All information collected. Say "ready" or "generate" when you want me to create the contact message.`
+                        : `Perfeito! Todas as informações coletadas. Diga "pronto" ou "gerar" quando quiser que eu crie a mensagem de contato.`;
+                    addMessage(readyMsg);
+                    jobCollectionState.collected.jobDescription = 'pending';
                 }, 300);
             } else {
                 showTyping();
@@ -1087,9 +1200,7 @@
                     const prompt = getCurrentFieldPrompt();
                     addMessage(prompt);
                     showQuickReplies(nextField);
-                    if (['workload', 'duration', 'budget', 'availability'].includes(nextField)) {
-                        // These fields have quick replies so show them
-                    } else {
+                    if (!['workload', 'duration', 'paymentType', 'budget', 'benefits', 'availability'].includes(nextField)) {
                         showTextInput();
                     }
                 }, 300);
@@ -1110,7 +1221,9 @@
             if (!c.position) return 'position';
             if (!c.workload) return 'workload';
             if (!c.duration) return 'duration';
+            if (!c.paymentType) return 'paymentType';
             if (!c.budget) return 'budget';
+            if (!c.benefits || c.benefits.length === 0) return 'benefits';
             if (!c.availability) return 'availability';
             return null; // all collected
         }
@@ -1125,7 +1238,9 @@
                     position: "What position or role are you looking to fill?",
                     workload: "What type of work arrangement?",
                     duration: "What is the expected duration?",
+                    paymentType: "Is the salary per hour, monthly, or yearly?",
                     budget: "What's the budget range for this position?",
+                    benefits: "Does the company offer any benefits?",
                     availability: "Are you available for a call to discuss this opportunity?"
                 },
                 pt: {
@@ -1134,31 +1249,55 @@
                     position: "Qual posição ou vaga você está buscando preencher?",
                     workload: "Qual tipo de regime de trabalho?",
                     duration: "Qual é a duração esperada?",
+                    paymentType: "O salário é por hora, mensal ou anual?",
                     budget: "Qual é a faixa de orçamento para esta posição?",
+                    benefits: "A empresa oferece algum benefício?",
                     availability: "Você está disponível para uma chamada para discutir esta oportunidade?"
                 }
             };
             return prompts[chatLang][field] || prompts[chatLang].name;
         }
         
-        // Generate WhatsApp link with all collected info
-        function generateWhatsAppLink() {
+        // Generate content based on language
+        function generateContactContent() {
             const c = jobCollectionState.collected;
-            const baseLink = 'https://wa.me/5547984493186?text=';
+            const isEN = chatLang === 'en';
+            
+            const title = isEN ? '--- JOB OPPORTUNITY INFORMATION ---' : '--- INFORMAÇÕES DA VAGA ---';
+            const end = isEN ? '--- END OF INFORMATION ---' : '--- FIM DAS INFORMAÇÕES ---';
             
             let text = `Olá Rafael!`;
-            text += `\n\n--- INFORMAÇÕES DA VAGA ---`;
-            if (c.name) text += `\nNome: ${c.name}`;
-            if (c.company) text += `\nEmpresa: ${c.company}`;
-            if (c.position) text += `\nPosição: ${c.position}`;
-            if (c.workload) text += `\nRegime: ${c.workload}`;
-            if (c.duration) text += `\nDuração: ${c.duration}`;
-            if (c.budget) text += `\nBudget: ${c.budget}`;
-            if (c.jobDescription && c.jobDescription !== 'pending') text += `\nDescrição: ${c.jobDescription}`;
-            if (c.availability) text += `\nDisponibilidade para call: ${c.availability}`;
-            text += `\n\n--- FIM DAS INFORMAÇÕES ---`;
+            text += `\n\n${title}`;
+            text += `\n${isEN ? 'Name' : 'Nome'}: ${c.name}`;
+            text += `\n${isEN ? 'Company' : 'Empresa'}: ${c.company}`;
+            text += `\n${isEN ? 'Position' : 'Posição'}: ${c.position}`;
+            if (c.workload) text += `\n${isEN ? 'Work Type' : 'Regime'}: ${c.workload}`;
+            if (c.duration) text += `\n${isEN ? 'Duration' : 'Duração'}: ${c.duration}`;
+            if (c.paymentType) text += `\n${isEN ? 'Payment Type' : 'Tipo de Pagamento'}: ${c.paymentType === 'hourly' ? (isEN ? 'Per hour' : 'Por hora') : c.paymentType === 'monthly' ? (isEN ? 'Per month' : 'Por mês') : (isEN ? 'Per year' : 'Por ano')}`;
+            if (c.budget) text += `\n${isEN ? 'Budget' : 'Budget'}: ${c.budget}`;
+            if (c.benefits && c.benefits.length > 0) {
+                const benefitsText = c.benefits.includes('none') ? (isEN ? 'No benefits' : 'Sem benefícios') : c.benefits.join(', ');
+                text += `\n${isEN ? 'Benefits' : 'Benefícios'}: ${benefitsText}`;
+            }
+            text += `\n${isEN ? 'Availability for call' : 'Disponibilidade para chamada'}: ${c.availability || (isEN ? 'Not specified' : 'Não especificado')}`;
+            text += `\n\n${end}`;
             
-            return baseLink + encodeURIComponent(text);
+            return text;
+        }
+        
+        // Generate WhatsApp link with all collected info
+        function generateWhatsAppLink() {
+            const text = generateContactContent();
+            return 'https://wa.me/5547984493186?text=' + encodeURIComponent(text);
+        }
+        
+        // Generate mailto link with all collected info
+        function generateEmailLink() {
+            const content = generateContactContent();
+            const subject = chatLang === 'en' 
+                ? `Job Opportunity: ${jobCollectionState.collected.position} at ${jobCollectionState.collected.company}`
+                : `Oportunidade: ${jobCollectionState.collected.position} na ${jobCollectionState.collected.company}`;
+            return `mailto:raafa001@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(content)}`;
         }
         
         // Check if user wants to generate link
@@ -1195,12 +1334,11 @@
                     await new Promise(r => setTimeout(r, 500));
                     hideTyping();
                     
-                    const waLink = generateWhatsAppLink();
                     addMessage(chatLang === 'en'
-                        ? `Perfect! Here's your pre-filled WhatsApp message to contact Rafael:`
-                        : `Perfeito! Aqui está sua mensagem pré-preenchida para entrar em contato com Rafael:`);
+                        ? `Perfect! Here's your pre-filled message to contact Rafael. Choose WhatsApp or Email:`
+                        : `Perfeito! Aqui está sua mensagem pré-preenchida para entrar em contato com Rafael. Escolha WhatsApp ou Email:`);
                     
-                    showWhatsAppPreview(waLink);
+                    showContactPreview();
                     jobCollectionState.active = false;
                     hideQuickReplies();
                     return;
@@ -1209,27 +1347,20 @@
                 // Check if we have all required fields
                 const nextField = getNextField();
                 if (nextField === null) {
-                    // All collected, prompt for job description or generate
-                    if (jobCollectionState.collected.jobDescription === 'pending') {
-                        // User is typing job description
-                        jobCollectionState.collected.jobDescription = message;
-                        showTyping();
-                        await new Promise(r => setTimeout(r, 500));
-                        hideTyping();
-                        addMessage(chatLang === 'en'
-                            ? `Got it! Say "ready" or "generate" when you want me to create the WhatsApp message.`
-                            : `Entendi! Diga "pronto" ou "gerar" quando quiser que eu crie a mensagem do WhatsApp.`);
-                    } else {
-                        addMessage(chatLang === 'en'
-                            ? `Perfect! Say "ready" or "generate" to create the WhatsApp message.`
-                            : `Perfeito! Diga "pronto" ou "gerar" para criar a mensagem do WhatsApp.`);
-                    }
+                    addMessage(chatLang === 'en'
+                        ? `Perfect! Say "ready" or "generate" to create the contact message.`
+                        : `Perfeito! Diga "pronto" ou "gerar" para criar a mensagem de contato.`);
                     return;
                 }
                 
                 // Check if user wants to skip
                 if (wantsToSkip(message)) {
-                    jobCollectionState.collected[nextField] = '(Not provided)';
+                    const currentField = getNextField();
+                    if (currentField === 'benefits') {
+                        jobCollectionState.collected.benefits = ['(Not provided)'];
+                    } else {
+                        jobCollectionState.collected[currentField] = '(Not provided)';
+                    }
                     const newNextField = getNextField();
                     if (newNextField === null) {
                         addMessage(chatLang === 'en'
@@ -1240,7 +1371,7 @@
                         await new Promise(r => setTimeout(r, 300));
                         hideTyping();
                         addMessage(getCurrentFieldPrompt());
-                        if (['workload', 'duration', 'budget', 'availability'].includes(newNextField)) {
+                        if (['workload', 'duration', 'paymentType', 'budget', 'benefits', 'availability'].includes(newNextField)) {
                             showQuickReplies(newNextField);
                         }
                     }
@@ -1248,49 +1379,30 @@
                 }
                 
                 // Handle text input for current field
-                const currentField = jobCollectionState.collected.jobDescription === 'pending' ? 'jobDescription' : getNextField();
+                const currentField = getNextField();
                 
-                if (currentField === 'jobDescription' && jobCollectionState.collected.jobDescription === 'pending') {
-                    jobCollectionState.collected.jobDescription = message;
-                    const nextField = getNextField();
+                // Store text input for non-button fields
+                if (currentField && !['workload', 'duration', 'paymentType', 'budget', 'benefits', 'availability'].includes(currentField)) {
+                    jobCollectionState.collected[currentField] = message;
+                    const newNextField = getNextField();
                     showTyping();
                     await new Promise(r => setTimeout(r, 300));
                     hideTyping();
-                    if (nextField === null) {
+                    
+                    if (newNextField === null) {
                         addMessage(chatLang === 'en'
-                            ? `Got it! Say "ready" or "generate" to create the WhatsApp message.`
-                            : `Entendi! Diga "pronto" ou "gerar" para criar a mensagem do WhatsApp.`);
+                            ? `Got it! Say "ready" or "generate" to create the contact message.`
+                            : `Entendi! Diga "pronto" ou "gerar" para criar a mensagem de contato.`);
                     } else {
                         addMessage(getCurrentFieldPrompt());
-                        if (['workload', 'duration', 'budget', 'availability'].includes(nextField)) {
-                            showQuickReplies(nextField);
+                        if (['workload', 'duration', 'paymentType', 'budget', 'benefits', 'availability'].includes(newNextField)) {
+                            showQuickReplies(newNextField);
+                        } else {
+                            showTextInput();
                         }
                     }
                     return;
                 }
-                
-                // Store the text input for current field
-                if (currentField && !['workload', 'duration', 'budget', 'availability'].includes(currentField)) {
-                    jobCollectionState.collected[currentField] = message;
-                }
-                
-                const newNextField = getNextField();
-                showTyping();
-                await new Promise(r => setTimeout(r, 300));
-                hideTyping();
-                
-                if (newNextField === null) {
-                    addMessage(chatLang === 'en'
-                        ? `Great! Now describe the job responsibilities and requirements briefly, or say "skip" to skip this.`
-                        : `Ótimo! Agora descreva brevemente as responsabilidades e requisitos da vaga, ou diga "pular" para ignorar.`);
-                    jobCollectionState.collected.jobDescription = 'pending';
-                } else {
-                    addMessage(getCurrentFieldPrompt());
-                    if (['workload', 'duration', 'budget', 'availability'].includes(newNextField)) {
-                        showQuickReplies(newNextField);
-                    }
-                }
-                return;
             }
             
             // Check for job keywords to start collection
@@ -1303,8 +1415,9 @@
                         position: '',
                         workload: '',
                         duration: '',
+                        paymentType: '',
                         budget: '',
-                        jobDescription: '',
+                        benefits: [],
                         availability: ''
                     },
                     currentField: null
