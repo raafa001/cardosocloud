@@ -768,6 +768,43 @@
         const GROQ_API_KEY = ''; // User needs to add their free API key here
         const GROQ_MODEL = 'llama-3.1-8b-instant';
         
+        // Job Collection State
+        let jobCollectionState = {
+            active: false,
+            collected: {
+                name: '',
+                company: '',
+                position: '',
+                jobDescription: '',
+                budget: '',
+                benefits: '',
+                availability: ''
+            },
+            currentField: null
+        };
+        
+        // Questions to ask for each field
+        const JOB_QUESTIONS = {
+            en: {
+                name: "What's your name? / What should I call you?",
+                company: "Which company is this opportunity for?",
+                position: "What position/role are you looking to fill?",
+                jobDescription: "Can you briefly describe the job responsibilities and requirements?",
+                budget: "What's the budget range for this position? (hourly rate, monthly, or project-based)",
+                benefits: "Are there any additional benefits you'd like to mention? (remote work, health insurance, etc.)",
+                availability: "Are you available for a call to discuss this opportunity further?"
+            },
+            pt: {
+                name: "Qual é o seu nome? / Como posso te chamar?",
+                company: "Para qual empresa é esta oportunidade?",
+                position: "Qual posição/vaga você está buscando preencher?",
+                jobDescription: "Pode descrever brevemente as responsabilidades e requisitos da vaga?",
+                budget: "Qual é a faixa de orçamento para esta posição? (por hora, mensal, ou baseado em projeto)",
+                benefits: "Há algum benefício adicional que gostaria de mencionar? (trabalho remoto, plano de saúde, etc.)",
+                availability: "Você está disponível para uma chamada para discutir esta oportunidade?"
+            }
+        };
+        
         // Knowledge Base
         const KNOWLEDGE_BASE = {
             en: `You are a virtual assistant for Rafael Cardoso dos Santos, Senior Site Reliability & Platform Engineer and founder of CARDOSO CLOUD & SRE LTDA.
@@ -793,10 +830,19 @@ CONTACT:
 IMPORTANT RULES:
 - Only answer questions related to Rafael Cardoso, CARDOSO CLOUD & SRE, or cloud infrastructure topics
 - If asked about topics unrelated to Rafael or the company, politely redirect
-- When someone mentions a JOB OPPORTUNITY (job position, vacancy, hiring, looking for SRE/platform engineer, etc.), you MUST generate a WhatsApp link using this format:
-   https://wa.me/5547984493186?text=Olá%20Rafael!%0ANome:%20[NOME]%0AEmpresa:%20[EMPRESA]%0APosição:%20[POSIÇÃO]%0AJob%20Description:%20[DESCRIÇÃO]%0ABudget:%20[BUDGET]%0ABenefícios:%20[BENEFÍCIOS]%0ADispobilidade%20para%20call:%20[SIM/NÃO]
-
-Extract from the conversation: person name, company name, position, job description, budget, benefits if mentioned, and availability.
+- When someone mentions a JOB OPPORTUNITY, you must collect ALL the following information before generating the WhatsApp link:
+  1. Name (ask if not provided)
+  2. Company name (ask if not provided)
+  3. Position/Role (ask if not provided)
+  4. Job description (ask if not provided)
+  5. Budget (ask if not provided)
+  6. Benefits (optional - can skip)
+  7. Availability for call (ask if not provided)
+  
+- IMPORTANT: Always ask for missing information one at a time. Be conversational and friendly.
+- When all required fields are collected (name, company, position, jobDescription, budget, availability), tell the user you're ready to generate the WhatsApp link.
+- If the user says "pronto", "ready", "gerar", "generate", or similar, generate the WhatsApp link with ALL collected information.
+- Do NOT automatically generate the link before collecting all information.
 - Always be professional and helpful
 - Respond in the same language as the user
 - Do NOT provide automatic scheduling - always redirect to WhatsApp for scheduling`,
@@ -823,10 +869,19 @@ CONTATO:
 REGRAS IMPORTANTES:
 - Responda apenas perguntas relacionadas a Rafael Cardoso, CARDOSO CLOUD & SRE, ou tópicos de infraestrutura cloud
 - Se perguntado sobre tópicos não relacionados, redirecione educadamente
-- Quando alguém mencionar OPORTUNIDADE DE TRABALHO (vaga, contratação, procurando SRE/engineer, etc.), você DEVE gerar um link do WhatsApp usando este formato:
-   https://wa.me/5547984493186?text=Olá%20Rafael!%0ANome:%20[NOME]%0AEmpresa:%20[EMPRESA]%0APosição:%20[POSIÇÃO]%0AJob%20Description:%20[DESCRIÇÃO]%0ABudget:%20[BUDGET]%0ABenefícios:%20[BENEFÍCIOS]%0ADispobilidade%20para%20call:%20[SIM/NÃO]
-
-Extraia da conversa: nome da pessoa, nome da empresa, posição, descrição da vaga, budget, benefícios se mencionados, e disponibilidade.
+- Quando alguém mencionar OPORTUNIDADE DE TRABALHO, você deve coletar TODAS as seguintes informações antes de gerar o link do WhatsApp:
+  1. Nome (pergunte se não fornecer)
+  2. Nome da empresa (pergunte se não fornecer)
+  3. Posição/Vaga (pergunte se não fornecer)
+  4. Descrição da vaga (pergunte se não fornecer)
+  5. Budget (pergunte se não fornecer)
+  6. Benefícios (opcional - pode pular)
+  7. Disponibilidade para call (pergunte se não fornecer)
+  
+- IMPORTANTE: Sempre pergunte por informações faltantes uma de cada vez. Seja conversacional e amigável.
+- Quando todos os campos obrigatórios forem coletados (nome, empresa, posição, descrição, budget, disponibilidade), diga ao usuário que você está pronto para gerar o link do WhatsApp.
+- Se o usuário disser "pronto", "ready", "gerar", "generate", ou similar, gere o link do WhatsApp com TODAS as informações coletadas.
+- NÃO gere automaticamente o link antes de coletar todas as informações.
 - Seja sempre profissional e prestativo
 - Responda no mesmo idioma do usuário
 - NÃO faça agendamento automático - sempre redirecione para WhatsApp para agendamento`
@@ -956,21 +1011,91 @@ Extraia da conversa: nome da pessoa, nome da empresa, posição, descrição da 
             return jobKeywords[chatLang].some(keyword => lowerMessage.includes(keyword));
         }
         
-        // Generate WhatsApp link
-        function generateWhatsAppLink(message, userName = '', company = '', position = '') {
+        // Extract info from message using AI-like pattern matching
+        function extractJobInfo(message) {
+            const collected = jobCollectionState.collected;
+            
+            // Extract name (simple pattern - capital letters words that might be names)
+            const namePattern = /(?:my name is|i'm|i am|call me|meu nome|me chamo|digo|chamado|dro)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i;
+            const nameMatch = message.match(namePattern);
+            if (nameMatch && !collected.name) {
+                collected.name = nameMatch[1];
+            }
+            
+            // Extract company
+            const companyPattern = /(?:company|empresa|from|at|da|para)\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)*)/i;
+            const companyMatch = message.match(companyPattern);
+            if (companyMatch && !collected.company) {
+                collected.company = companyMatch[1];
+            }
+            
+            // Extract position
+            const positionPattern = /(?:position|vaga|posição|role|looking for|procurando|buscando)\s+(?:a\s+)?([A-Za-z\s]+?)(?:\s|,|$)/i;
+            const positionMatch = message.match(positionPattern);
+            if (positionMatch && !collected.position) {
+                collected.position = positionMatch[1].trim();
+            }
+            
+            // If message is long, it might be job description
+            if (message.length > 50 && !collected.jobDescription) {
+                collected.jobDescription = message.substring(0, 300);
+            }
+            
+            // Extract budget
+            const budgetPattern = /(?:budget|preço|price|custo|cost|range|faixa)\s*:?\s*[\$R€]?\s*([\d.,]+(?:k|K|m|M)?(?:\s*-\s*[\$R€]?\s*[\d.,]+(?:k|K|m|M)?)?)/i;
+            const budgetMatch = message.match(budgetPattern);
+            if (budgetMatch && !collected.budget) {
+                collected.budget = budgetMatch[1];
+            }
+            
+            // Check for availability
+            if (/\b(yes|sim|sure|claro|available|disponível)\b/i.test(message) && !collected.availability) {
+                collected.availability = 'Sim / Yes';
+            } else if (/\b(no|not|não|não tenho)\b/i.test(message) && !collected.availability) {
+                collected.availability = 'Não / No';
+            }
+        }
+        
+        // Get next field to collect
+        function getNextField() {
+            const c = jobCollectionState.collected;
+            if (!c.name) return 'name';
+            if (!c.company) return 'company';
+            if (!c.position) return 'position';
+            if (!c.jobDescription) return 'jobDescription';
+            if (!c.budget) return 'budget';
+            if (!c.availability) return 'availability';
+            if (!c.benefits) return 'benefits'; // optional
+            return null; // all collected
+        }
+        
+        // Generate WhatsApp link with all collected info
+        function generateWhatsAppLink() {
+            const c = jobCollectionState.collected;
             const baseLink = 'https://wa.me/5547984493186?text=';
+            
             let text = `Olá Rafael!`;
-            
-            if (userName) text += `\nNome: ${userName}`;
-            if (company) text += `\nEmpresa: ${company}`;
-            if (position) text += `\nPosição: ${position}`;
-            
-            text += `\nJob Description: ${message.substring(0, 200)}...`;
-            text += `\nBudget: Não informado`;
-            text += `\nBenefícios: Não informados`;
-            text += `\nDisponibilidade para call: Aguardando interesse`;
+            text += `\n\n--- INFORMAÇÕES DA VAGA ---`;
+            if (c.name) text += `\nNome: ${c.name}`;
+            if (c.company) text += `\nEmpresa: ${c.company}`;
+            if (c.position) text += `\nPosição: ${c.position}`;
+            if (c.jobDescription) text += `\nJob Description: ${c.jobDescription}`;
+            if (c.budget) text += `\nBudget: ${c.budget}`;
+            if (c.benefits) text += `\nBenefícios: ${c.benefits}`;
+            if (c.availability) text += `\nDisponibilidade para call: ${c.availability}`;
+            text += `\n\n--- FIM DAS INFORMAÇÕES ---`;
             
             return baseLink + encodeURIComponent(text);
+        }
+        
+        // Check if user wants to generate link
+        function wantsToGenerate(message) {
+            const generateKeywords = {
+                en: ['ready', 'generate', 'done', 'finish', 'complete', 'pronto', 'gerar', 'concluir', 'enviar', 'send'],
+                pt: ['pronto', 'gerar', 'concluir', 'enviar', 'send', 'ready', 'done', 'finish']
+            };
+            const lower = message.toLowerCase();
+            return generateKeywords[chatLang].some(k => lower.includes(k));
         }
         
         // Send message
@@ -982,18 +1107,74 @@ Extraia da conversa: nome da pessoa, nome da empresa, posição, descrição da 
             addMessage(message, true);
             chatInput.value = '';
             
-            // Check for job keywords
+            // If in job collection mode, check for info extraction
+            if (jobCollectionState.active) {
+                extractJobInfo(message);
+                
+                // Check if user wants to generate the link
+                if (wantsToGenerate(message)) {
+                    showTyping();
+                    await new Promise(r => setTimeout(r, 500));
+                    hideTyping();
+                    
+                    const waLink = generateWhatsAppLink();
+                    addMessage(chatLang === 'en'
+                        ? `Perfect! I've collected all the information. Here's your pre-filled WhatsApp message to contact Rafael:`
+                        : `Perfeito! Coletamos todas as informações. Aqui está sua mensagem pré-preenchida para entrar em contato com Rafael:`);
+                    
+                    showWhatsAppPreview(waLink);
+                    jobCollectionState.active = false;
+                    return;
+                }
+                
+                // Check if we have all required fields
+                const nextField = getNextField();
+                if (nextField === null) {
+                    // All collected, prompt to generate
+                    addMessage(chatLang === 'en'
+                        ? `I've collected all the information! Just say "ready" or "generate" when you're ready to create the WhatsApp message.`
+                        : `Colei todas as informações! Quando estiver pronto, diga "pronto" ou "gerar" para criar a mensagem do WhatsApp.`);
+                    return;
+                }
+                
+                // Ask for next field
+                if (!jobCollectionState.collected[nextField]) {
+                    showTyping();
+                    await new Promise(r => setTimeout(r, 300));
+                    hideTyping();
+                    
+                    const question = JOB_QUESTIONS[chatLang][nextField];
+                    addMessage(question);
+                    return;
+                }
+            }
+            
+            // Check for job keywords to start collection
             if (containsJobKeywords(message)) {
+                jobCollectionState = {
+                    active: true,
+                    collected: {
+                        name: '',
+                        company: '',
+                        position: '',
+                        jobDescription: '',
+                        budget: '',
+                        benefits: '',
+                        availability: ''
+                    },
+                    currentField: null
+                };
+                
+                // Try to extract any info already provided
+                extractJobInfo(message);
+                
                 showTyping();
                 await new Promise(r => setTimeout(r, 500));
                 hideTyping();
                 
-                const waLink = generateWhatsAppLink(message);
-                addMessage(chatLang === 'en' 
-                    ? `I noticed you're discussing a job opportunity! Based on our conversation, here's a pre-filled WhatsApp message you can send to Rafael to start the conversation:\n\nOr click the button below to open WhatsApp directly.`
-                    : `Notei que você está discutindo uma oportunidade de trabalho! Com base na nossa conversa, aqui está uma mensagem pré-preenchida que você pode enviar para Rafael para iniciar a conversa:\n\nOu clique no botão abaixo para abrir o WhatsApp diretamente.`);
-                
-                showWhatsAppPreview(waLink);
+                addMessage(chatLang === 'en'
+                    ? `Great! I'm here to help you with this opportunity. To create a pre-filled WhatsApp message for Rafael, I'll need some information.\n\nLet's start: What's your name?`
+                    : `Ótimo! Estou aqui para ajudar com esta oportunidade. Para criar uma mensagem pré-preenchida do WhatsApp para Rafael, preciso de algumas informações.\n\nVamos começar: Qual é o seu nome?`);
                 return;
             }
             
