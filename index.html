@@ -750,6 +750,11 @@
                 </a>
             </div>
             
+            <!-- Quick Reply Buttons -->
+            <div id="quick-replies" class="hidden px-4 pb-2">
+                <div class="flex flex-wrap gap-2" id="quick-reply-buttons"></div>
+            </div>
+            
             <!-- Input -->
             <div class="p-4 border-t border-neutral-800">
                 <div class="flex space-x-2">
@@ -774,12 +779,73 @@
                 name: '',
                 company: '',
                 position: '',
-                jobDescription: '',
+                workload: '', // full-time, part-time, contract
+                duration: '', // long-term, short-term, project-based
                 budget: '',
-                benefits: '',
                 availability: ''
             },
             currentField: null
+        };
+        
+        // Quick reply options for each field
+        const QUICK_REPLIES = {
+            name: null, // Text input
+            company: null, // Text input
+            position: null, // Text input
+            workload: {
+                en: [
+                    { label: 'Full-time', value: 'Full-time (CLT)' },
+                    { label: 'Part-time', value: 'Part-time' },
+                    { label: 'Contract', value: 'Contract (PJ)' },
+                    { label: 'Freelance', value: 'Freelance' }
+                ],
+                pt: [
+                    { label: 'CLT', value: 'Full-time (CLT)' },
+                    { label: 'Meio período', value: 'Part-time' },
+                    { label: 'Contrato PJ', value: 'Contract (PJ)' },
+                    { label: 'Freelance', value: 'Freelance' }
+                ]
+            },
+            duration: {
+                en: [
+                    { label: 'Long-term', value: 'Long-term (6+ months)' },
+                    { label: 'Short-term', value: 'Short-term (< 6 months)' },
+                    { label: 'Project-based', value: 'Project-based' },
+                    { label: 'Not defined', value: 'Not defined yet' }
+                ],
+                pt: [
+                    { label: 'Longo prazo', value: 'Long-term (6+ months)' },
+                    { label: 'Curto prazo', value: 'Short-term (< 6 months)' },
+                    { label: 'Baseado em projeto', value: 'Project-based' },
+                    { label: 'Não definido', value: 'Not defined yet' }
+                ]
+            },
+            budget: {
+                en: [
+                    { label: '< $50/h', value: 'Less than $50/hour' },
+                    { label: '$50-100/h', value: '$50-100/hour' },
+                    { label: '$100-200/h', value: '$100-200/hour' },
+                    { label: '> $200/h', value: 'More than $200/hour' }
+                ],
+                pt: [
+                    { label: '< R$300/h', value: 'Less than R$300/hour' },
+                    { label: 'R$300-600/h', value: 'R$300-600/hour' },
+                    { label: 'R$600-1200/h', value: 'R$600-1200/hour' },
+                    { label: '> R$1200/h', value: 'More than R$1200/hour' }
+                ]
+            },
+            availability: {
+                en: [
+                    { label: 'Yes, Im available', value: 'Yes, available for call' },
+                    { label: 'No, email only', value: 'No, prefer email first' },
+                    { label: 'Lets schedule', value: 'Yes, lets schedule a call' }
+                ],
+                pt: [
+                    { label: 'Sim, disponivel', value: 'Sim, disponivel para chamada' },
+                    { label: 'Nao, email apenas', value: 'Nao, prefiro email primeiro' },
+                    { label: 'Vamos agendar', value: 'Sim, vamos agendar uma chamada' }
+                ]
+            }
         };
         
         // Chat State
@@ -968,16 +1034,84 @@
             }
         }
         
+        // Show quick reply buttons for current field
+        function showQuickReplies(field) {
+            const quickRepliesContainer = document.getElementById('quick-replies');
+            const buttonsContainer = document.getElementById('quick-reply-buttons');
+            const options = QUICK_REPLIES[field]?.[chatLang];
+            
+            if (!options) {
+                quickRepliesContainer.classList.add('hidden');
+                return;
+            }
+            
+            buttonsContainer.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-red-500 text-neutral-200 text-xs rounded-full transition-colors';
+                btn.textContent = opt.label;
+                btn.onclick = () => handleQuickReply(field, opt.value);
+                buttonsContainer.appendChild(btn);
+            });
+            
+            quickRepliesContainer.classList.remove('hidden');
+        }
+        
+        // Hide quick reply buttons
+        function hideQuickReplies() {
+            document.getElementById('quick-replies').classList.add('hidden');
+        }
+        
+        // Handle quick reply selection
+        function handleQuickReply(field, value) {
+            jobCollectionState.collected[field] = value;
+            hideQuickReplies();
+            
+            // Move to next field
+            const nextField = getNextField();
+            if (nextField === null) {
+                // All collected, ask for job description
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    addMessage(chatLang === 'en'
+                        ? `Great! Now please describe the job responsibilities and requirements in more detail (or type 'skip' to skip this):`
+                        : `Ótimo! Agora descreva as responsabilidades e requisitos da vaga em mais detalhes (ou digite 'pular' para ignorar):`);
+                    jobCollectionState.collected.jobDescription = 'pending'; // Mark as pending text input
+                    showTextInput();
+                }, 300);
+            } else {
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    const prompt = getCurrentFieldPrompt();
+                    addMessage(prompt);
+                    showQuickReplies(nextField);
+                    if (['workload', 'duration', 'budget', 'availability'].includes(nextField)) {
+                        // These fields have quick replies so show them
+                    } else {
+                        showTextInput();
+                    }
+                }, 300);
+            }
+        }
+        
+        // Show text input for text fields
+        function showTextInput() {
+            chatInput.disabled = false;
+            chatInput.placeholder = chatLang === 'en' ? 'Type your answer...' : 'Digite sua resposta...';
+        }
+        
         // Get next field to collect
         function getNextField() {
             const c = jobCollectionState.collected;
             if (!c.name) return 'name';
             if (!c.company) return 'company';
             if (!c.position) return 'position';
-            if (!c.jobDescription) return 'jobDescription';
+            if (!c.workload) return 'workload';
+            if (!c.duration) return 'duration';
             if (!c.budget) return 'budget';
             if (!c.availability) return 'availability';
-            if (!c.benefits) return 'benefits'; // optional
             return null; // all collected
         }
         
@@ -989,18 +1123,18 @@
                     name: "What's your name?",
                     company: "Which company is this opportunity for?",
                     position: "What position or role are you looking to fill?",
-                    jobDescription: "Can you briefly describe the job responsibilities and requirements?",
-                    budget: "What's the budget range for this position? (hourly rate, monthly, or project-based)",
-                    benefits: "Any additional benefits to mention? (remote work, health insurance, etc.) - or just say 'skip'",
+                    workload: "What type of work arrangement?",
+                    duration: "What is the expected duration?",
+                    budget: "What's the budget range for this position?",
                     availability: "Are you available for a call to discuss this opportunity?"
                 },
                 pt: {
                     name: "Qual é o seu nome?",
                     company: "Para qual empresa é esta oportunidade?",
                     position: "Qual posição ou vaga você está buscando preencher?",
-                    jobDescription: "Pode descrever brevemente as responsabilidades e requisitos da vaga?",
-                    budget: "Qual é a faixa de orçamento para esta posição? (por hora, mensal, ou baseado em projeto)",
-                    benefits: "Algum benefício adicional? (trabalho remoto, plano de saúde, etc.) - ou diga 'pular'",
+                    workload: "Qual tipo de regime de trabalho?",
+                    duration: "Qual é a duração esperada?",
+                    budget: "Qual é a faixa de orçamento para esta posição?",
                     availability: "Você está disponível para uma chamada para discutir esta oportunidade?"
                 }
             };
@@ -1017,9 +1151,10 @@
             if (c.name) text += `\nNome: ${c.name}`;
             if (c.company) text += `\nEmpresa: ${c.company}`;
             if (c.position) text += `\nPosição: ${c.position}`;
-            if (c.jobDescription) text += `\nJob Description: ${c.jobDescription}`;
+            if (c.workload) text += `\nRegime: ${c.workload}`;
+            if (c.duration) text += `\nDuração: ${c.duration}`;
             if (c.budget) text += `\nBudget: ${c.budget}`;
-            if (c.benefits) text += `\nBenefícios: ${c.benefits}`;
+            if (c.jobDescription && c.jobDescription !== 'pending') text += `\nDescrição: ${c.jobDescription}`;
             if (c.availability) text += `\nDisponibilidade para call: ${c.availability}`;
             text += `\n\n--- FIM DAS INFORMAÇÕES ---`;
             
@@ -1052,11 +1187,8 @@
             addMessage(message, true);
             chatInput.value = '';
             
-            // If in job collection mode, check for info extraction
+            // If in job collection mode
             if (jobCollectionState.active) {
-                // Try to extract info first
-                extractJobInfo(message);
-                
                 // Check if user wants to generate the link
                 if (wantsToGenerate(message)) {
                     showTyping();
@@ -1065,53 +1197,100 @@
                     
                     const waLink = generateWhatsAppLink();
                     addMessage(chatLang === 'en'
-                        ? `Perfect! I've collected all the information. Here's your pre-filled WhatsApp message to contact Rafael:`
-                        : `Perfeito! Coletamos todas as informações. Aqui está sua mensagem pré-preenchida para entrar em contato com Rafael:`);
+                        ? `Perfect! Here's your pre-filled WhatsApp message to contact Rafael:`
+                        : `Perfeito! Aqui está sua mensagem pré-preenchida para entrar em contato com Rafael:`);
                     
                     showWhatsAppPreview(waLink);
                     jobCollectionState.active = false;
+                    hideQuickReplies();
                     return;
                 }
                 
                 // Check if we have all required fields
                 const nextField = getNextField();
                 if (nextField === null) {
-                    // All collected, prompt to generate
-                    addMessage(chatLang === 'en'
-                        ? `Perfect! I've collected all the information. Just say "ready" or "generate" when you're ready to create the WhatsApp message.`
-                        : `Perfeito! Colei todas as informações. Quando estiver pronto, diga "pronto" ou "gerar" para criar a mensagem do WhatsApp.`);
+                    // All collected, prompt for job description or generate
+                    if (jobCollectionState.collected.jobDescription === 'pending') {
+                        // User is typing job description
+                        jobCollectionState.collected.jobDescription = message;
+                        showTyping();
+                        await new Promise(r => setTimeout(r, 500));
+                        hideTyping();
+                        addMessage(chatLang === 'en'
+                            ? `Got it! Say "ready" or "generate" when you want me to create the WhatsApp message.`
+                            : `Entendi! Diga "pronto" ou "gerar" quando quiser que eu crie a mensagem do WhatsApp.`);
+                    } else {
+                        addMessage(chatLang === 'en'
+                            ? `Perfect! Say "ready" or "generate" to create the WhatsApp message.`
+                            : `Perfeito! Diga "pronto" ou "gerar" para criar a mensagem do WhatsApp.`);
+                    }
                     return;
                 }
                 
-                // Check if user wants to skip this field
+                // Check if user wants to skip
                 if (wantsToSkip(message)) {
-                    // Mark current field as skipped and move to next
-                    jobCollectionState.collected[nextField] = '(Não informado / Not provided)';
-                    const skippedField = nextField;
+                    jobCollectionState.collected[nextField] = '(Not provided)';
                     const newNextField = getNextField();
-                    
                     if (newNextField === null) {
                         addMessage(chatLang === 'en'
-                            ? `Got it, skipping "${skippedField}". I've collected everything else. Say "ready" or "generate" when you're ready.`
-                            : `Entendi, pulando "${skippedField}". Coletamos o resto. Diga "pronto" ou "gerar" quando estiver pronto.`);
-                        return;
+                            ? `Skipped. Say "ready" or "generate" when ready.`
+                            : `Pulado. Diga "pronto" ou "gerar" quando estiver pronto.`);
+                    } else {
+                        showTyping();
+                        await new Promise(r => setTimeout(r, 300));
+                        hideTyping();
+                        addMessage(getCurrentFieldPrompt());
+                        if (['workload', 'duration', 'budget', 'availability'].includes(newNextField)) {
+                            showQuickReplies(newNextField);
+                        }
                     }
-                    
-                    showTyping();
-                    await new Promise(r => setTimeout(r, 300));
-                    hideTyping();
-                    addMessage(getCurrentFieldPrompt());
                     return;
                 }
                 
-                // Ask for next field if not yet collected
-                if (!jobCollectionState.collected[nextField]) {
+                // Handle text input for current field
+                const currentField = jobCollectionState.collected.jobDescription === 'pending' ? 'jobDescription' : getNextField();
+                
+                if (currentField === 'jobDescription' && jobCollectionState.collected.jobDescription === 'pending') {
+                    jobCollectionState.collected.jobDescription = message;
+                    const nextField = getNextField();
                     showTyping();
                     await new Promise(r => setTimeout(r, 300));
                     hideTyping();
-                    addMessage(getCurrentFieldPrompt());
+                    if (nextField === null) {
+                        addMessage(chatLang === 'en'
+                            ? `Got it! Say "ready" or "generate" to create the WhatsApp message.`
+                            : `Entendi! Diga "pronto" ou "gerar" para criar a mensagem do WhatsApp.`);
+                    } else {
+                        addMessage(getCurrentFieldPrompt());
+                        if (['workload', 'duration', 'budget', 'availability'].includes(nextField)) {
+                            showQuickReplies(nextField);
+                        }
+                    }
                     return;
                 }
+                
+                // Store the text input for current field
+                if (currentField && !['workload', 'duration', 'budget', 'availability'].includes(currentField)) {
+                    jobCollectionState.collected[currentField] = message;
+                }
+                
+                const newNextField = getNextField();
+                showTyping();
+                await new Promise(r => setTimeout(r, 300));
+                hideTyping();
+                
+                if (newNextField === null) {
+                    addMessage(chatLang === 'en'
+                        ? `Great! Now describe the job responsibilities and requirements briefly, or say "skip" to skip this.`
+                        : `Ótimo! Agora descreva brevemente as responsabilidades e requisitos da vaga, ou diga "pular" para ignorar.`);
+                    jobCollectionState.collected.jobDescription = 'pending';
+                } else {
+                    addMessage(getCurrentFieldPrompt());
+                    if (['workload', 'duration', 'budget', 'availability'].includes(newNextField)) {
+                        showQuickReplies(newNextField);
+                    }
+                }
+                return;
             }
             
             // Check for job keywords to start collection
@@ -1122,32 +1301,22 @@
                         name: '',
                         company: '',
                         position: '',
-                        jobDescription: '',
+                        workload: '',
+                        duration: '',
                         budget: '',
-                        benefits: '',
+                        jobDescription: '',
                         availability: ''
                     },
                     currentField: null
                 };
                 
-                // Try to extract any info already provided
-                extractJobInfo(message);
-                
                 showTyping();
                 await new Promise(r => setTimeout(r, 500));
                 hideTyping();
                 
-                // If name was already extracted, move to next field
-                if (jobCollectionState.collected.name) {
-                    const nextField = getNextField();
-                    addMessage(chatLang === 'en'
-                        ? `Great! I noted your name is ${jobCollectionState.collected.name}. ${getCurrentFieldPrompt()}`
-                        : `Ótimo! Anotei que seu nome é ${jobCollectionState.collected.name}. ${getCurrentFieldPrompt()}`);
-                } else {
-                    addMessage(chatLang === 'en'
-                        ? `Great! I'm here to help you with this opportunity. To create a pre-filled WhatsApp message for Rafael, I'll need some information.\n\n${getCurrentFieldPrompt()}`
-                        : `Ótimo! Estou aqui para ajudar com esta oportunidade. Para criar uma mensagem pré-preenchida do WhatsApp para Rafael, preciso de algumas informações.\n\n${getCurrentFieldPrompt()}`);
-                }
+                addMessage(chatLang === 'en'
+                    ? `Great! I'm here to help you with this job opportunity. I'll ask you a few quick questions.\n\nLet's start: What is your name?`
+                    : `Ótimo! Estou aqui para ajudar com esta oportunidade. Vou fazer algumas perguntas rápidas.\n\nVamos começar: Qual é o seu nome?`);
                 return;
             }
             
