@@ -890,7 +890,7 @@
                     { label: 'Device allowance', value: 'Device allowance' },
                     { label: 'Education/Certs', value: 'Education/Certifications allowance' },
                     { label: 'Pension plan', value: 'Pension plan' },
-                    { label: 'Other', value: 'Other benefits' }
+                    { label: 'Several benefits', value: 'Several benefits' }
                 ],
                 pt: [
                     { label: 'Sem benefícios', value: 'none', exclusive: true },
@@ -900,7 +900,7 @@
                     { label: 'Auxílio dispositivo', value: 'Auxílio dispositivo' },
                     { label: 'Cursos/Certificações', value: 'Auxílio educação/certificações' },
                     { label: 'Previdência', value: 'Previdência privada' },
-                    { label: 'Outros', value: 'Outros benefícios' }
+                    { label: 'Vários benefícios', value: 'Several benefits' }
                 ]
             },
             availability: {
@@ -1337,7 +1337,7 @@
                     const prompt = getCurrentFieldPrompt();
                     addMessage(prompt);
                     showQuickReplies(nextField);
-                    if (!['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'stack', 'startTime', 'benefits', 'availability'].includes(nextField)) {
+                    if (!['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'startTime', 'benefits', 'availability'].includes(nextField)) {
                         showTextInput();
                     }
                 }, 300);
@@ -1540,7 +1540,7 @@
                         await new Promise(r => setTimeout(r, 300));
                         hideTyping();
                         addMessage(getCurrentFieldPrompt());
-                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'stack', 'startTime', 'benefits', 'availability'].includes(newNextField)) {
+                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'startTime', 'benefits', 'availability'].includes(newNextField)) {
                             showQuickReplies(newNextField);
                         } else {
                             showTextInput();
@@ -1553,7 +1553,7 @@
                 const currentField = getNextField();
                 
                 // Store text input for non-button fields
-                if (currentField && !['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'stack', 'startTime', 'benefits', 'availability'].includes(currentField)) {
+                if (currentField && !['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'startTime', 'benefits', 'availability'].includes(currentField)) {
                     jobCollectionState.collected[currentField] = message;
                     const newNextField = getNextField();
                     showTyping();
@@ -1566,7 +1566,7 @@
                             : `Entendi! Diga "pronto" ou "gerar" para criar a mensagem de contato.`);
                     } else {
                         addMessage(getCurrentFieldPrompt());
-                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'stack', 'startTime', 'benefits', 'availability'].includes(newNextField)) {
+                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'startTime', 'benefits', 'availability'].includes(newNextField)) {
                             showQuickReplies(newNextField);
                         } else {
                             showTextInput();
