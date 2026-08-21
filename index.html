@@ -782,28 +782,6 @@
             currentField: null
         };
         
-        // Questions to ask for each field
-        const JOB_QUESTIONS = {
-            en: {
-                name: "What's your name? / What should I call you?",
-                company: "Which company is this opportunity for?",
-                position: "What position/role are you looking to fill?",
-                jobDescription: "Can you briefly describe the job responsibilities and requirements?",
-                budget: "What's the budget range for this position? (hourly rate, monthly, or project-based)",
-                benefits: "Are there any additional benefits you'd like to mention? (remote work, health insurance, etc.)",
-                availability: "Are you available for a call to discuss this opportunity further?"
-            },
-            pt: {
-                name: "Qual é o seu nome? / Como posso te chamar?",
-                company: "Para qual empresa é esta oportunidade?",
-                position: "Qual posição/vaga você está buscando preencher?",
-                jobDescription: "Pode descrever brevemente as responsabilidades e requisitos da vaga?",
-                budget: "Qual é a faixa de orçamento para esta posição? (por hora, mensal, ou baseado em projeto)",
-                benefits: "Há algum benefício adicional que gostaria de mencionar? (trabalho remoto, plano de saúde, etc.)",
-                availability: "Você está disponível para uma chamada para discutir esta oportunidade?"
-            }
-        };
-        
         // Chat State
         let chatLang = 'en';
         let conversationHistory = [];
@@ -931,26 +909,43 @@
         // Extract info from message using AI-like pattern matching
         function extractJobInfo(message) {
             const collected = jobCollectionState.collected;
+            const lowerMessage = message.toLowerCase();
             
-            // Extract name (simple pattern - capital letters words that might be names)
-            const namePattern = /(?:my name is|i'm|i am|call me|meu nome|me chamo|digo|chamado|dro)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i;
+            // Extract name - more flexible patterns
+            const namePattern = /(?:my name is|i'm|i am|call me|meu nome|me chamo|digo|chamado|dro|eu sou|this is|it's)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i;
             const nameMatch = message.match(namePattern);
             if (nameMatch && !collected.name) {
                 collected.name = nameMatch[1];
             }
+            // Also capture if user just types what looks like a name (2-3 words, capitalized)
+            else if (!collected.name && message.match(/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?$/) && message.length < 30) {
+                collected.name = message.trim();
+            }
             
             // Extract company
-            const companyPattern = /(?:company|empresa|from|at|da|para)\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)*)/i;
-            const companyMatch = message.match(companyPattern);
-            if (companyMatch && !collected.company) {
-                collected.company = companyMatch[1];
+            const companyPatterns = [
+                /(?:company|empresa|from|at|da|para)\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)*)/i,
+                /(?:i work at|i work for|trabalho na|trabalho no|da empresa)\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)*)/i
+            ];
+            for (const pattern of companyPatterns) {
+                const match = message.match(pattern);
+                if (match && !collected.company) {
+                    collected.company = match[1];
+                    break;
+                }
             }
             
             // Extract position
-            const positionPattern = /(?:position|vaga|posição|role|looking for|procurando|buscando)\s+(?:a\s+)?([A-Za-z\s]+?)(?:\s|,|$)/i;
-            const positionMatch = message.match(positionPattern);
-            if (positionMatch && !collected.position) {
-                collected.position = positionMatch[1].trim();
+            const positionPatterns = [
+                /(?:position|vaga|posição|role|looking for|procurando|buscando)\s+(?:a\s+)?([A-Za-z\s]+?)(?:\s|,|$)/i,
+                /(?:for|para)\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)*)\s+(?:position|role|vaga)/i
+            ];
+            for (const pattern of positionPatterns) {
+                const match = message.match(pattern);
+                if (match && !collected.position) {
+                    collected.position = match[1].trim();
+                    break;
+                }
             }
             
             // If message is long, it might be job description
@@ -966,9 +961,9 @@
             }
             
             // Check for availability
-            if (/\b(yes|sim|sure|claro|available|disponível)\b/i.test(message) && !collected.availability) {
+            if (/\b(yes|sim|sure|claro|available|disponível|posso|podem)\b/i.test(message) && !collected.availability) {
                 collected.availability = 'Sim / Yes';
-            } else if (/\b(no|not|não|não tenho)\b/i.test(message) && !collected.availability) {
+            } else if (/\b(no|not|não|não tenho|impossible|não posso)\b/i.test(message) && !collected.availability) {
                 collected.availability = 'Não / No';
             }
         }
@@ -984,6 +979,32 @@
             if (!c.availability) return 'availability';
             if (!c.benefits) return 'benefits'; // optional
             return null; // all collected
+        }
+        
+        // Get prompt for current field
+        function getCurrentFieldPrompt() {
+            const field = getNextField();
+            const prompts = {
+                en: {
+                    name: "What's your name?",
+                    company: "Which company is this opportunity for?",
+                    position: "What position or role are you looking to fill?",
+                    jobDescription: "Can you briefly describe the job responsibilities and requirements?",
+                    budget: "What's the budget range for this position? (hourly rate, monthly, or project-based)",
+                    benefits: "Any additional benefits to mention? (remote work, health insurance, etc.) - or just say 'skip'",
+                    availability: "Are you available for a call to discuss this opportunity?"
+                },
+                pt: {
+                    name: "Qual é o seu nome?",
+                    company: "Para qual empresa é esta oportunidade?",
+                    position: "Qual posição ou vaga você está buscando preencher?",
+                    jobDescription: "Pode descrever brevemente as responsabilidades e requisitos da vaga?",
+                    budget: "Qual é a faixa de orçamento para esta posição? (por hora, mensal, ou baseado em projeto)",
+                    benefits: "Algum benefício adicional? (trabalho remoto, plano de saúde, etc.) - ou diga 'pular'",
+                    availability: "Você está disponível para uma chamada para discutir esta oportunidade?"
+                }
+            };
+            return prompts[chatLang][field] || prompts[chatLang].name;
         }
         
         // Generate WhatsApp link with all collected info
@@ -1015,6 +1036,13 @@
             return generateKeywords[chatLang].some(k => lower.includes(k));
         }
         
+        // Check if user wants to skip current field
+        function wantsToSkip(message) {
+            const skipKeywords = ['skip', 'pular', 'next', 'próximo', 'deixa', 'deixar', 'later', 'depois'];
+            const lower = message.toLowerCase();
+            return skipKeywords.some(k => lower.includes(k));
+        }
+        
         // Send message
         async function sendMessage() {
             const message = chatInput.value.trim();
@@ -1026,6 +1054,7 @@
             
             // If in job collection mode, check for info extraction
             if (jobCollectionState.active) {
+                // Try to extract info first
                 extractJobInfo(message);
                 
                 // Check if user wants to generate the link
@@ -1049,19 +1078,38 @@
                 if (nextField === null) {
                     // All collected, prompt to generate
                     addMessage(chatLang === 'en'
-                        ? `I've collected all the information! Just say "ready" or "generate" when you're ready to create the WhatsApp message.`
-                        : `Colei todas as informações! Quando estiver pronto, diga "pronto" ou "gerar" para criar a mensagem do WhatsApp.`);
+                        ? `Perfect! I've collected all the information. Just say "ready" or "generate" when you're ready to create the WhatsApp message.`
+                        : `Perfeito! Colei todas as informações. Quando estiver pronto, diga "pronto" ou "gerar" para criar a mensagem do WhatsApp.`);
                     return;
                 }
                 
-                // Ask for next field
+                // Check if user wants to skip this field
+                if (wantsToSkip(message)) {
+                    // Mark current field as skipped and move to next
+                    jobCollectionState.collected[nextField] = '(Não informado / Not provided)';
+                    const skippedField = nextField;
+                    const newNextField = getNextField();
+                    
+                    if (newNextField === null) {
+                        addMessage(chatLang === 'en'
+                            ? `Got it, skipping "${skippedField}". I've collected everything else. Say "ready" or "generate" when you're ready.`
+                            : `Entendi, pulando "${skippedField}". Coletamos o resto. Diga "pronto" ou "gerar" quando estiver pronto.`);
+                        return;
+                    }
+                    
+                    showTyping();
+                    await new Promise(r => setTimeout(r, 300));
+                    hideTyping();
+                    addMessage(getCurrentFieldPrompt());
+                    return;
+                }
+                
+                // Ask for next field if not yet collected
                 if (!jobCollectionState.collected[nextField]) {
                     showTyping();
                     await new Promise(r => setTimeout(r, 300));
                     hideTyping();
-                    
-                    const question = JOB_QUESTIONS[chatLang][nextField];
-                    addMessage(question);
+                    addMessage(getCurrentFieldPrompt());
                     return;
                 }
             }
@@ -1089,9 +1137,17 @@
                 await new Promise(r => setTimeout(r, 500));
                 hideTyping();
                 
-                addMessage(chatLang === 'en'
-                    ? `Great! I'm here to help you with this opportunity. To create a pre-filled WhatsApp message for Rafael, I'll need some information.\n\nLet's start: What's your name?`
-                    : `Ótimo! Estou aqui para ajudar com esta oportunidade. Para criar uma mensagem pré-preenchida do WhatsApp para Rafael, preciso de algumas informações.\n\nVamos começar: Qual é o seu nome?`);
+                // If name was already extracted, move to next field
+                if (jobCollectionState.collected.name) {
+                    const nextField = getNextField();
+                    addMessage(chatLang === 'en'
+                        ? `Great! I noted your name is ${jobCollectionState.collected.name}. ${getCurrentFieldPrompt()}`
+                        : `Ótimo! Anotei que seu nome é ${jobCollectionState.collected.name}. ${getCurrentFieldPrompt()}`);
+                } else {
+                    addMessage(chatLang === 'en'
+                        ? `Great! I'm here to help you with this opportunity. To create a pre-filled WhatsApp message for Rafael, I'll need some information.\n\n${getCurrentFieldPrompt()}`
+                        : `Ótimo! Estou aqui para ajudar com esta oportunidade. Para criar uma mensagem pré-preenchida do WhatsApp para Rafael, preciso de algumas informações.\n\n${getCurrentFieldPrompt()}`);
+                }
                 return;
             }
             
