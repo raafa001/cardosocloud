@@ -787,8 +787,14 @@
                 position: '',
                 workload: '',
                 duration: '',
+                currency: '',
+                seniority: '',
+                employmentType: '',
                 paymentType: '',
                 budget: '',
+                budgetHourly: '',
+                budgetMonthly: '',
+                budgetYearly: '',
                 benefits: [],
                 availability: ''
             },
@@ -828,6 +834,42 @@
                     { label: 'Não definido', value: 'Not defined yet' }
                 ]
             },
+            currency: {
+                en: [
+                    { label: 'Dollar (USD)', value: 'USD' },
+                    { label: 'Euro (EUR)', value: 'EUR' },
+                    { label: 'Real (BRL)', value: 'BRL' }
+                ],
+                pt: [
+                    { label: 'Dólar (USD)', value: 'USD' },
+                    { label: 'Euro (EUR)', value: 'EUR' },
+                    { label: 'Real (BRL)', value: 'BRL' }
+                ]
+            },
+            seniority: {
+                en: [
+                    { label: 'Mid-Senior', value: 'mid-senior' },
+                    { label: 'Senior', value: 'senior' },
+                    { label: 'Staff/Specialist', value: 'staff' },
+                    { label: 'Lead', value: 'lead' }
+                ],
+                pt: [
+                    { label: 'Mid-Senior', value: 'mid-senior' },
+                    { label: 'Senior', value: 'senior' },
+                    { label: 'Staff/Especialista', value: 'staff' },
+                    { label: 'Lead', value: 'lead' }
+                ]
+            },
+            employmentType: {
+                en: [
+                    { label: 'CLT (Permanent)', value: 'CLT' },
+                    { label: 'PJ / Contractor', value: 'PJ' }
+                ],
+                pt: [
+                    { label: 'CLT', value: 'CLT' },
+                    { label: 'PJ', value: 'PJ' }
+                ]
+            },
             paymentType: {
                 en: [
                     { label: 'Per hour', value: 'hourly' },
@@ -838,48 +880,6 @@
                     { label: 'Por hora', value: 'hourly' },
                     { label: 'Por mês', value: 'monthly' },
                     { label: 'Por ano', value: 'yearly' }
-                ]
-            },
-            budgetHourly: {
-                en: [
-                    { label: '< $50/h', value: 'Less than $50/hour' },
-                    { label: '$50-100/h', value: '$50-100/hour' },
-                    { label: '$100-200/h', value: '$100-200/hour' },
-                    { label: '> $200/h', value: 'More than $200/hour' }
-                ],
-                pt: [
-                    { label: '< R$300/h', value: 'Less than R$300/hour' },
-                    { label: 'R$300-600/h', value: 'R$300-600/hour' },
-                    { label: 'R$600-1200/h', value: 'R$600-1200/hour' },
-                    { label: '> R$1200/h', value: 'More than R$1200/hour' }
-                ]
-            },
-            budgetMonthly: {
-                en: [
-                    { label: '< $3k/month', value: 'Less than $3,000/month' },
-                    { label: '$3k-8k/month', value: '$3,000-8,000/month' },
-                    { label: '$8k-15k/month', value: '$8,000-15,000/month' },
-                    { label: '> $15k/month', value: 'More than $15,000/month' }
-                ],
-                pt: [
-                    { label: '< R$15k/mês', value: 'Less than R$15,000/month' },
-                    { label: 'R$15k-40k/mês', value: 'R$15,000-40,000/month' },
-                    { label: 'R$40k-80k/mês', value: 'R$40,000-80,000/month' },
-                    { label: '> R$80k/mês', value: 'More than R$80,000/month' }
-                ]
-            },
-            budgetYearly: {
-                en: [
-                    { label: '< $50k/year', value: 'Less than $50,000/year' },
-                    { label: '$50k-100k/year', value: '$50,000-100,000/year' },
-                    { label: '$100k-200k/year', value: '$100,000-200,000/year' },
-                    { label: '> $200k/year', value: 'More than $200,000/year' }
-                ],
-                pt: [
-                    { label: '< R$250k/ano', value: 'Less than R$250,000/year' },
-                    { label: 'R$250k-500k/ano', value: 'R$250,000-500,000/year' },
-                    { label: 'R$500k-1M/ano', value: 'R$500,000-1,000,000/year' },
-                    { label: '> R$1M/ano', value: 'More than R$1,000,000/year' }
                 ]
             },
             benefits: {
@@ -1109,6 +1109,126 @@
             }
         }
         
+        // Generate budget ranges based on currency, seniority, employment type, and payment type
+        function generateBudgetRanges() {
+            const c = jobCollectionState.collected;
+            const isEN = chatLang === 'en';
+            const symbol = c.currency === 'BRL' ? 'R$' : c.currency === 'EUR' ? '€' : '$';
+            const currencyName = c.currency === 'BRL' ? (isEN ? 'Real' : 'Real') : c.currency === 'EUR' ? (isEN ? 'Euro' : 'Euro') : (isEN ? 'Dollar' : 'Dólar');
+            
+            // Seniority multipliers for USD/EUR (base is mid-senior)
+            // mid-senior base, senior +$8/h or +$800/m or +$13k/y, staff +$18/h or +$1800/m or +$28k/y, lead +$18/h or +$1800/m or +$28k/y
+            const seniorityOffsets = {
+                'mid-senior': { hourly: 0, monthly: 0, yearly: 0 },
+                'senior': { hourly: 8, monthly: 800, yearly: 13000 },
+                'staff': { hourly: 18, monthly: 1800, yearly: 28000 },
+                'lead': { hourly: 18, monthly: 1800, yearly: 28000 }
+            };
+            
+            // Base ranges for USD/EUR per payment type (mid-senior)
+            const usdBaseRanges = {
+                hourly: [
+                    { min: 30, max: 50 },
+                    { min: 50, max: 100 },
+                    { min: 100, max: 200 },
+                    { min: 200, max: null }
+                ],
+                monthly: [
+                    { min: 4800, max: 8000 },
+                    { min: 8000, max: 15000 },
+                    { min: 15000, max: 25000 },
+                    { min: 25000, max: null }
+                ],
+                yearly: [
+                    { min: 65000, max: 100000 },
+                    { min: 100000, max: 200000 },
+                    { min: 200000, max: 350000 },
+                    { min: 350000, max: null }
+                ]
+            };
+            
+            // For BRL PJ: Senior minimum R$20,000/month (40h/week = 160h/month)
+            // hourly = 20000/160 = R$125/h, yearly = 20000 * 14 = R$280,000
+            // Staff: +R$5,000/month → R$25,000/month
+            // Lead: +R$5,000/month → R$25,000/month (same as staff for now)
+            
+            // For BRL CLT: Senior minimum R$15,000/month
+            // Staff/Lead: +R$5,000/month → R$20,000/month
+            
+            if (c.currency === 'BRL') {
+                if (c.employmentType === 'PJ') {
+                    // BRL PJ - Senior base R$20,000/month
+                    const baseMonthly = 20000;
+                    const staffAdd = 5000;
+                    const monthlyMin = c.seniority === 'mid-senior' ? baseMonthly : 
+                                       c.seniority === 'senior' ? baseMonthly :
+                                       baseMonthly + staffAdd; // staff and lead get same bump
+                    
+                    if (c.paymentType === 'hourly') {
+                        const hourlyMin = monthlyMin / 160; // 40h/week * 4 weeks = 160h
+                        return [
+                            { label: `${symbol}${Math.round(hourlyMin)}-${symbol}${Math.round(hourlyMin * 1.5)}/h`, value: `${symbol}${Math.round(hourlyMin)}-${symbol}${Math.round(hourlyMin * 1.5)}/hour` },
+                            { label: `${symbol}${Math.round(hourlyMin * 1.5)}-${symbol}${Math.round(hourlyMin * 2.5)}/h`, value: `${symbol}${Math.round(hourlyMin * 1.5)}-${symbol}${Math.round(hourlyMin * 2.5)}/hour` },
+                            { label: `${symbol}${Math.round(hourlyMin * 2.5)}-${symbol}${Math.round(hourlyMin * 4)}/h`, value: `${symbol}${Math.round(hourlyMin * 2.5)}-${symbol}${Math.round(hourlyMin * 4)}/hour` },
+                            { label: `> ${symbol}${Math.round(hourlyMin * 4)}/h`, value: `More than ${symbol}${Math.round(hourlyMin * 4)}/hour` }
+                        ];
+                    } else if (c.paymentType === 'monthly') {
+                        return [
+                            { label: `${symbol}${monthlyMin.toLocaleString()}-${symbol}${(monthlyMin * 1.5).toLocaleString()}/mês`, value: `${symbol}${monthlyMin.toLocaleString()}-${symbol}${(monthlyMin * 1.5).toLocaleString()}/month` },
+                            { label: `${symbol}${(monthlyMin * 1.5).toLocaleString()}-${symbol}${(monthlyMin * 2.5).toLocaleString()}/mês`, value: `${symbol}${(monthlyMin * 1.5).toLocaleString()}-${symbol}${(monthlyMin * 2.5).toLocaleString()}/month` },
+                            { label: `${symbol}${(monthlyMin * 2.5).toLocaleString()}-${symbol}${(monthlyMin * 4).toLocaleString()}/mês`, value: `${symbol}${(monthlyMin * 2.5).toLocaleString()}-${symbol}${(monthlyMin * 4).toLocaleString()}/month` },
+                            { label: `> ${symbol}${(monthlyMin * 4).toLocaleString()}/mês`, value: `More than ${symbol}${(monthlyMin * 4).toLocaleString()}/month` }
+                        ];
+                    } else { // yearly
+                        const yearlyMin = monthlyMin * 14;
+                        return [
+                            { label: `${symbol}${(yearlyMin / 1000).toFixed(0)}k-${symbol}${(yearlyMin * 1.5 / 1000).toFixed(0)}k/ano`, value: `${symbol}${yearlyMin.toLocaleString()}-${symbol}${(yearlyMin * 1.5).toLocaleString()}/year` },
+                            { label: `${symbol}${(yearlyMin * 1.5 / 1000).toFixed(0)}k-${symbol}${(yearlyMin * 2.5 / 1000).toFixed(0)}k/ano`, value: `${symbol}${(yearlyMin * 1.5).toLocaleString()}-${symbol}${(yearlyMin * 2.5).toLocaleString()}/year` },
+                            { label: `${symbol}${(yearlyMin * 2.5 / 1000).toFixed(0)}k-${symbol}${(yearlyMin * 4 / 1000).toFixed(0)}k/ano`, value: `${symbol}${(yearlyMin * 2.5).toLocaleString()}-${symbol}${(yearlyMin * 4).toLocaleString()}/year` },
+                            { label: `> ${symbol}${(yearlyMin * 4 / 1000).toFixed(0)}k/ano`, value: `More than ${symbol}${(yearlyMin * 4).toLocaleString()}/year` }
+                        ];
+                    }
+                } else {
+                    // BRL CLT - Senior base R$15,000/month (only monthly makes sense for CLT)
+                    const baseMonthly = 15000;
+                    const staffAdd = 5000;
+                    const monthlyMin = c.seniority === 'mid-senior' ? baseMonthly : 
+                                       c.seniority === 'senior' ? baseMonthly :
+                                       baseMonthly + staffAdd;
+                    
+                    return [
+                        { label: `${symbol}${monthlyMin.toLocaleString()}-${symbol}${(monthlyMin * 1.5).toLocaleString()}/mês`, value: `${symbol}${monthlyMin.toLocaleString()}-${symbol}${(monthlyMin * 1.5).toLocaleString()}/month` },
+                        { label: `${symbol}${(monthlyMin * 1.5).toLocaleString()}-${symbol}${(monthlyMin * 2.5).toLocaleString()}/mês`, value: `${symbol}${(monthlyMin * 1.5).toLocaleString()}-${symbol}${(monthlyMin * 2.5).toLocaleString()}/month` },
+                        { label: `${symbol}${(monthlyMin * 2.5).toLocaleString()}-${symbol}${(monthlyMin * 4).toLocaleString()}/mês`, value: `${symbol}${(monthlyMin * 2.5).toLocaleString()}-${symbol}${(monthlyMin * 4).toLocaleString()}/month` },
+                        { label: `> ${symbol}${(monthlyMin * 4).toLocaleString()}/mês`, value: `More than ${symbol}${(monthlyMin * 4).toLocaleString()}/month` }
+                    ];
+                }
+            }
+            
+            // USD/EUR - apply seniority offsets
+            const offset = seniorityOffsets[c.seniority] || seniorityOffsets['mid-senior'];
+            const baseRanges = usdBaseRanges[c.paymentType] || usdBaseRanges.monthly;
+            
+            return baseRanges.map((range, i) => {
+                const min = range.min + (c.paymentType === 'hourly' ? offset.hourly : c.paymentType === 'monthly' ? offset.monthly : offset.yearly);
+                const max = range.max ? range.max + (c.paymentType === 'hourly' ? offset.hourly : c.paymentType === 'monthly' ? offset.monthly : offset.yearly) : null;
+                
+                if (c.paymentType === 'hourly') {
+                    const label = max ? `${symbol}${min}-${symbol}${max}/h` : `> ${symbol}${min}/h`;
+                    const value = max ? `${symbol}${min}-${symbol}${max}/hour` : `More than ${symbol}${min}/hour`;
+                    return { label, value };
+                } else if (c.paymentType === 'monthly') {
+                    const label = max ? `${symbol}${(min/1000).toFixed(1)}k-${symbol}${(max/1000).toFixed(1)}k/mês` : `> ${symbol}${(min/1000).toFixed(1)}k/mês`;
+                    const value = max ? `${symbol}${min.toLocaleString()}-${symbol}${max.toLocaleString()}/month` : `More than ${symbol}${min.toLocaleString()}/month`;
+                    return { label, value };
+                } else {
+                    const label = max ? `${symbol}${(min/1000).toFixed(0)}k-${symbol}${(max/1000).toFixed(0)}k/ano` : `> ${symbol}${(min/1000).toFixed(0)}k/ano`;
+                    const value = max ? `${symbol}${min.toLocaleString()}-${symbol}${max.toLocaleString()}/year` : `More than ${symbol}${min.toLocaleString()}/year`;
+                    return { label, value };
+                }
+            });
+        }
+        
         // Show quick reply buttons for current field
         function showQuickReplies(field) {
             const quickRepliesContainer = document.getElementById('quick-replies');
@@ -1116,19 +1236,12 @@
             
             let options = QUICK_REPLIES[field]?.[chatLang];
             
-            // Special handling for budget based on payment type
+            // Special handling for budget - generate dynamic ranges
             if (field === 'budget') {
-                const paymentType = jobCollectionState.collected.paymentType;
-                if (paymentType === 'hourly') {
-                    options = QUICK_REPLIES.budgetHourly?.[chatLang];
-                } else if (paymentType === 'monthly') {
-                    options = QUICK_REPLIES.budgetMonthly?.[chatLang];
-                } else if (paymentType === 'yearly') {
-                    options = QUICK_REPLIES.budgetYearly?.[chatLang];
-                }
+                options = generateBudgetRanges();
             }
             
-            if (!options) {
+            if (!options || options.length === 0) {
                 quickRepliesContainer.classList.add('hidden');
                 return;
             }
@@ -1191,7 +1304,6 @@
                         ? `Perfect! All information collected. Say "ready" or "generate" when you want me to create the contact message.`
                         : `Perfeito! Todas as informações coletadas. Diga "pronto" ou "gerar" quando quiser que eu crie a mensagem de contato.`;
                     addMessage(readyMsg);
-                    jobCollectionState.collected.jobDescription = 'pending';
                 }, 300);
             } else {
                 showTyping();
@@ -1200,7 +1312,7 @@
                     const prompt = getCurrentFieldPrompt();
                     addMessage(prompt);
                     showQuickReplies(nextField);
-                    if (!['workload', 'duration', 'paymentType', 'budget', 'benefits', 'availability'].includes(nextField)) {
+                    if (!['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'benefits', 'availability'].includes(nextField)) {
                         showTextInput();
                     }
                 }, 300);
@@ -1221,6 +1333,9 @@
             if (!c.position) return 'position';
             if (!c.workload) return 'workload';
             if (!c.duration) return 'duration';
+            if (!c.currency) return 'currency';
+            if (!c.seniority) return 'seniority';
+            if (c.currency === 'BRL' && !c.employmentType) return 'employmentType';
             if (!c.paymentType) return 'paymentType';
             if (!c.budget) return 'budget';
             if (!c.benefits || c.benefits.length === 0) return 'benefits';
@@ -1238,6 +1353,9 @@
                     position: "What position or role are you looking to fill?",
                     workload: "What type of work arrangement?",
                     duration: "What is the expected duration?",
+                    currency: "What is the currency for the salary?",
+                    seniority: "What is the seniority level for this position?",
+                    employmentType: "What type of employment contract?",
                     paymentType: "Is the salary per hour, monthly, or yearly?",
                     budget: "What's the budget range for this position?",
                     benefits: "Does the company offer any benefits?",
@@ -1249,6 +1367,9 @@
                     position: "Qual posição ou vaga você está buscando preencher?",
                     workload: "Qual tipo de regime de trabalho?",
                     duration: "Qual é a duração esperada?",
+                    currency: "Qual é a moeda do salário?",
+                    seniority: "Qual é o nível de senioridade para esta posição?",
+                    employmentType: "Qual tipo de contrato de trabalho?",
                     paymentType: "O salário é por hora, mensal ou anual?",
                     budget: "Qual é a faixa de orçamento para esta posição?",
                     benefits: "A empresa oferece algum benefício?",
@@ -1266,6 +1387,18 @@
             const title = isEN ? '--- JOB OPPORTUNITY INFORMATION ---' : '--- INFORMAÇÕES DA VAGA ---';
             const end = isEN ? '--- END OF INFORMATION ---' : '--- FIM DAS INFORMAÇÕES ---';
             
+            const seniorityLabels = {
+                'mid-senior': isEN ? 'Mid-Senior' : 'Mid-Senior',
+                'senior': isEN ? 'Senior' : 'Senior',
+                'staff': isEN ? 'Staff/Specialist' : 'Staff/Especialista',
+                'lead': isEN ? 'Lead' : 'Lead'
+            };
+            
+            const employmentLabels = {
+                'CLT': isEN ? 'CLT (Permanent)' : 'CLT',
+                'PJ': isEN ? 'PJ / Contractor' : 'PJ'
+            };
+            
             let text = `Olá Rafael!`;
             text += `\n\n${title}`;
             text += `\n${isEN ? 'Name' : 'Nome'}: ${c.name}`;
@@ -1273,6 +1406,9 @@
             text += `\n${isEN ? 'Position' : 'Posição'}: ${c.position}`;
             if (c.workload) text += `\n${isEN ? 'Work Type' : 'Regime'}: ${c.workload}`;
             if (c.duration) text += `\n${isEN ? 'Duration' : 'Duração'}: ${c.duration}`;
+            if (c.seniority) text += `\n${isEN ? 'Seniority' : 'Senioridade'}: ${seniorityLabels[c.seniority] || c.seniority}`;
+            if (c.currency) text += `\n${isEN ? 'Currency' : 'Moeda'}: ${c.currency}`;
+            if (c.employmentType) text += `\n${isEN ? 'Contract Type' : 'Tipo de Contrato'}: ${employmentLabels[c.employmentType] || c.employmentType}`;
             if (c.paymentType) text += `\n${isEN ? 'Payment Type' : 'Tipo de Pagamento'}: ${c.paymentType === 'hourly' ? (isEN ? 'Per hour' : 'Por hora') : c.paymentType === 'monthly' ? (isEN ? 'Per month' : 'Por mês') : (isEN ? 'Per year' : 'Por ano')}`;
             if (c.budget) text += `\n${isEN ? 'Budget' : 'Budget'}: ${c.budget}`;
             if (c.benefits && c.benefits.length > 0) {
@@ -1371,7 +1507,7 @@
                         await new Promise(r => setTimeout(r, 300));
                         hideTyping();
                         addMessage(getCurrentFieldPrompt());
-                        if (['workload', 'duration', 'paymentType', 'budget', 'benefits', 'availability'].includes(newNextField)) {
+                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'benefits', 'availability'].includes(newNextField)) {
                             showQuickReplies(newNextField);
                         }
                     }
@@ -1382,7 +1518,7 @@
                 const currentField = getNextField();
                 
                 // Store text input for non-button fields
-                if (currentField && !['workload', 'duration', 'paymentType', 'budget', 'benefits', 'availability'].includes(currentField)) {
+                if (currentField && !['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'benefits', 'availability'].includes(currentField)) {
                     jobCollectionState.collected[currentField] = message;
                     const newNextField = getNextField();
                     showTyping();
@@ -1395,7 +1531,7 @@
                             : `Entendi! Diga "pronto" ou "gerar" para criar a mensagem de contato.`);
                     } else {
                         addMessage(getCurrentFieldPrompt());
-                        if (['workload', 'duration', 'paymentType', 'budget', 'benefits', 'availability'].includes(newNextField)) {
+                        if (['workload', 'duration', 'currency', 'seniority', 'employmentType', 'paymentType', 'budget', 'benefits', 'availability'].includes(newNextField)) {
                             showQuickReplies(newNextField);
                         } else {
                             showTextInput();
@@ -1415,6 +1551,9 @@
                         position: '',
                         workload: '',
                         duration: '',
+                        currency: '',
+                        seniority: '',
+                        employmentType: '',
                         paymentType: '',
                         budget: '',
                         benefits: [],
