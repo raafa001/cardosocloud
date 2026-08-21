@@ -764,9 +764,9 @@
     </div>
     
     <script>
-        // Groq API Configuration (Free tier - https://console.groq.com/)
-        const GROQ_API_KEY = ''; // User needs to add their free API key here
-        const GROQ_MODEL = 'llama-3.1-8b-instant';
+        // Cloudflare Worker URL - Replace with your worker URL after deployment
+        // Example: https://cardoso-cloud-ai.your-username.workers.dev
+        const WORKER_URL = ''; // Add your Cloudflare Worker URL here after deployment
         
         // Job Collection State
         let jobCollectionState = {
@@ -803,88 +803,6 @@
                 benefits: "Há algum benefício adicional que gostaria de mencionar? (trabalho remoto, plano de saúde, etc.)",
                 availability: "Você está disponível para uma chamada para discutir esta oportunidade?"
             }
-        };
-        
-        // Knowledge Base
-        const KNOWLEDGE_BASE = {
-            en: `You are a virtual assistant for Rafael Cardoso dos Santos, Senior Site Reliability & Platform Engineer and founder of CARDOSO CLOUD & SRE LTDA.
-
-COMPANY: CARDOSO CLOUD & SRE LTDA
-- Location: Joinville, SC, Brazil (Serving Worldwide)
-- Specialties: SRE, AWS, GCP, Kubernetes, Terraform, Kafka, Observability, CI/CD, DevOps, Cloud Architecture
-- Achievements: 75% faster builds, 30% cost reduction, 99.99% availability, 100% uptime during peak events
-
-SERVICES OFFERED:
-1. Cloud Architecture & Migration (AWS, GCP, Terraform)
-2. Kubernetes & Container Orchestration (EKS, GKE, Helm, Docker)
-3. Observability, SLOs & Incident Response (Datadog, Prometheus, Grafana)
-4. CI/CD Modernization & Security (GitHub Actions, ArgoCD, SonarQube)
-5. Messaging & Streaming Engineering (Kafka, MSK, Pub/Sub)
-6. FinOps & Cloud Cost Optimization
-
-CONTACT:
-- Email: raafa001@gmail.com
-- WhatsApp: +55 47 984493186
-- LinkedIn: https://www.linkedin.com/in/rafa-cardoso
-
-IMPORTANT RULES:
-- Only answer questions related to Rafael Cardoso, CARDOSO CLOUD & SRE, or cloud infrastructure topics
-- If asked about topics unrelated to Rafael or the company, politely redirect
-- When someone mentions a JOB OPPORTUNITY, you must collect ALL the following information before generating the WhatsApp link:
-  1. Name (ask if not provided)
-  2. Company name (ask if not provided)
-  3. Position/Role (ask if not provided)
-  4. Job description (ask if not provided)
-  5. Budget (ask if not provided)
-  6. Benefits (optional - can skip)
-  7. Availability for call (ask if not provided)
-  
-- IMPORTANT: Always ask for missing information one at a time. Be conversational and friendly.
-- When all required fields are collected (name, company, position, jobDescription, budget, availability), tell the user you're ready to generate the WhatsApp link.
-- If the user says "pronto", "ready", "gerar", "generate", or similar, generate the WhatsApp link with ALL collected information.
-- Do NOT automatically generate the link before collecting all information.
-- Always be professional and helpful
-- Respond in the same language as the user
-- Do NOT provide automatic scheduling - always redirect to WhatsApp for scheduling`,
-            pt: `Você é um assistente virtual de Rafael Cardoso dos Santos, Senior Site Reliability & Platform Engineer e fundador da CARDOSO CLOUD & SRE LTDA.
-
-EMPRESA: CARDOSO CLOUD & SRE LTDA
-- Localização: Joinville, SC, Brazil (Atendimento Mundial)
-- Especialidades: SRE, AWS, GCP, Kubernetes, Terraform, Kafka, Observability, CI/CD, DevOps, Cloud Architecture
-- Conquistas: 75% mais rápido em builds, 30% redução de custos, 99.99% disponibilidade, 100% uptime em picos
-
-SERVIÇOS OFERECIDOS:
-1. Arquitetura Cloud & Migração (AWS, GCP, Terraform)
-2. Kubernetes & Orquestração (EKS, GKE, Helm, Docker)
-3. Observabilidade, SLOs & Resposta a Incidentes (Datadog, Prometheus, Grafana)
-4. Modernização CI/CD & Segurança (GitHub Actions, ArgoCD, SonarQube)
-5. Mensageria & Streaming (Kafka, MSK, Pub/Sub)
-6. FinOps & Otimização de Custos
-
-CONTATO:
-- Email: raafa001@gmail.com
-- WhatsApp: +55 47 984493186
-- LinkedIn: https://www.linkedin.com/in/rafa-cardoso
-
-REGRAS IMPORTANTES:
-- Responda apenas perguntas relacionadas a Rafael Cardoso, CARDOSO CLOUD & SRE, ou tópicos de infraestrutura cloud
-- Se perguntado sobre tópicos não relacionados, redirecione educadamente
-- Quando alguém mencionar OPORTUNIDADE DE TRABALHO, você deve coletar TODAS as seguintes informações antes de gerar o link do WhatsApp:
-  1. Nome (pergunte se não fornecer)
-  2. Nome da empresa (pergunte se não fornecer)
-  3. Posição/Vaga (pergunte se não fornecer)
-  4. Descrição da vaga (pergunte se não fornecer)
-  5. Budget (pergunte se não fornecer)
-  6. Benefícios (opcional - pode pular)
-  7. Disponibilidade para call (pergunte se não fornecer)
-  
-- IMPORTANTE: Sempre pergunte por informações faltantes uma de cada vez. Seja conversacional e amigável.
-- Quando todos os campos obrigatórios forem coletados (nome, empresa, posição, descrição, budget, disponibilidade), diga ao usuário que você está pronto para gerar o link do WhatsApp.
-- Se o usuário disser "pronto", "ready", "gerar", "generate", ou similar, gere o link do WhatsApp com TODAS as informações coletadas.
-- NÃO gere automaticamente o link antes de coletar todas as informações.
-- Seja sempre profissional e prestativo
-- Responda no mesmo idioma do usuário
-- NÃO faça agendamento automático - sempre redirecione para WhatsApp para agendamento`
         };
         
         // Chat State
@@ -1181,8 +1099,8 @@ REGRAS IMPORTANTES:
             // Add to conversation history
             conversationHistory.push({ role: 'user', content: message });
             
-            // Check if API key is configured
-            if (!GROQ_API_KEY) {
+            // Check if Worker URL is configured
+            if (!WORKER_URL) {
                 showTyping();
                 await new Promise(r => setTimeout(r, 1000));
                 hideTyping();
@@ -1195,30 +1113,27 @@ REGRAS IMPORTANTES:
             showTyping();
             
             try {
-                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${GROQ_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: GROQ_MODEL,
-                        messages: [
-                            { role: 'system', content: KNOWLEDGE_BASE[chatLang] },
-                            ...conversationHistory.slice(-10)
-                        ],
-                        temperature: 0.7,
-                        max_tokens: 500
+                        messages: conversationHistory.slice(-10),
+                        language: chatLang
                     })
                 });
                 
                 const data = await response.json();
                 hideTyping();
                 
-                if (data.choices && data.choices[0]) {
-                    const aiResponse = data.choices[0].message.content;
-                    conversationHistory.push({ role: 'assistant', content: aiResponse });
-                    addMessage(aiResponse);
+                if (data.response) {
+                    conversationHistory.push({ role: 'model', content: data.response });
+                    addMessage(data.response);
+                } else if (data.error) {
+                    addMessage(chatLang === 'en'
+                        ? `Error: ${data.error}. Please contact Rafael directly via WhatsApp.`
+                        : `Erro: ${data.error}. Por favor, entre em contato com Rafael diretamente via WhatsApp.`);
                 } else {
                     addMessage(chatLang === 'en'
                         ? 'Sorry, I encountered an error. Please try again or contact Rafael directly.'
