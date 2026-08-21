@@ -15,11 +15,26 @@ const GEMINI_API_KEY = ""; // Fallback - should be set as secret in Cloudflare
 
 export default {
   async fetch(request, env, ctx) {
+    // Handle CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      });
+    }
+
     // Only accept POST requests with JSON body
     if (request.method !== 'POST') {
       return new Response(JSON.stringify({ error: 'Method not allowed' }), {
         status: 405,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
 
@@ -35,7 +50,10 @@ export default {
           error: 'API key not configured. Please set GEMINI_API_KEY in Cloudflare Worker settings.'
         }), {
           status: 500,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
         });
       }
 
@@ -129,10 +147,13 @@ IMPORTANT RULES:
         const errorData = await geminiResponse.text();
         console.error('Gemini API error:', errorData);
         return new Response(JSON.stringify({ 
-          error: 'Failed to get response from Gemini API' 
+          error: 'Failed to get response from Gemini API: ' + errorData.substring(0, 100)
         }), {
           status: 500,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
         });
       }
 
@@ -147,16 +168,24 @@ IMPORTANT RULES:
         response: responseText
       }), {
         status: 200,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
       });
 
     } catch (error) {
       console.error('Worker error:', error);
       return new Response(JSON.stringify({ 
-        error: 'Internal server error' 
+        error: 'Internal server error: ' + error.message
       }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
   }
